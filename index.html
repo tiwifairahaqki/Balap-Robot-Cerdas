@@ -4,769 +4,1492 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#101827">
-<title>Balap Robot Cerdas - 4 Kelompok</title>
+<title>Balap Robot Cerdas</title>
 
 <style>
 :root {
-  --bg:#101827;
-  --panel:#192438;
-  --text:#f8fafc;
-  --muted:#b7c3d8;
-  --green:#4ade80;
+    --bg: #f1f5f9;
+    --navy: #172554;
+    --blue: #0284c7;
+    --red: #e11d48;
+    --yellow: #ca8a04;
+    --green: #16a34a;
 }
-* { box-sizing:border-box; }
+
+* {
+    box-sizing: border-box;
+}
+
 body {
-  margin:0;
-  padding:14px;
-  background:radial-gradient(circle at top,#263753,#101827 70%);
-  color:var(--text);
-  font-family:Arial,Helvetica,sans-serif;
+    margin: 0;
+    background: var(--bg);
+    color: #172033;
+    font-family: Arial, Helvetica, sans-serif;
 }
-header { text-align:center; margin:5px 0 16px; }
-header h1 {
-  color:var(--green);
-  margin:6px 0;
-  font-size:clamp(23px,3vw,38px);
+
+button, input {
+    font: inherit;
 }
-header p { color:var(--muted); margin:5px 0; }
-.topbar {
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-wrap:wrap;
-  gap:10px;
-  margin-bottom:14px;
+
+button {
+    cursor: pointer;
 }
-  
-/* ARENA BALAPAN ROBOT */
-.race-arena {
-    background: linear-gradient(135deg, #172033, #263b60);
+
+.top-header {
+    background: linear-gradient(120deg, #10234a, #1d4ed8);
     color: white;
-    padding: 20px;
-    margin: 15px;
-    border-radius: 18px;
-    box-shadow: 0 6px 18px #0003;
-}
-
-.race-arena h2 {
     text-align: center;
-    margin: 0 0 20px;
-    font-size: 24px;
+    padding: 22px 15px;
 }
 
-.race-track {
+.top-header h1 {
+    margin: 0 0 8px;
+    font-size: clamp(22px, 3vw, 34px);
+}
+
+.top-header p {
+    margin: 0;
+    color: #dbeafe;
+    font-size: 14px;
+}
+
+.toolbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 14px;
+    background: white;
+    border-bottom: 1px solid #dbe3ef;
+}
+
+.toolbar button,
+.toolbar input {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+}
+
+.toolbar input {
+    width: min(360px, 90vw);
+}
+
+.btn-primary {
+    background: #2563eb;
+    color: white;
+    border: none !important;
+}
+
+.btn-green {
+    background: #15803d;
+    color: white;
+    border: none !important;
+}
+
+.btn-dark {
+    background: #1e293b;
+    color: white;
+    border: none !important;
+}
+
+.status {
+    text-align: center;
+    padding: 9px 12px;
+    font-size: 13px;
+    background: #e0f2fe;
+    color: #075985;
+}
+
+.status.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* ARENA BALAPAN */
+.race-arena {
+    margin: 18px auto;
+    width: calc(100% - 28px);
+    max-width: 1600px;
+    padding: 20px;
+    color: white;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #111827, #263b60);
+    box-shadow: 0 7px 20px #0f172a20;
+}
+
+.race-title {
+    margin: 0 0 5px;
+    text-align: center;
+    font-size: clamp(21px, 2.6vw, 30px);
+}
+
+.race-subtitle {
+    text-align: center;
+    color: #cbd5e1;
+    font-size: 13px;
+    margin: 0 0 20px;
+}
+
+.race-lanes {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 13px;
 }
 
 .race-lane {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+    display: grid;
+    grid-template-columns: 105px minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
 }
 
-.lane-label {
+.lane-name {
     font-size: 12px;
     font-weight: bold;
-    color: #ffffff;
+    line-height: 1.5;
 }
+
+.lane-name span {
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    color: #cbd5e1;
+}
+
+.lane-name.blue { color: #7dd3fc; }
+.lane-name.red { color: #fda4af; }
+.lane-name.yellow { color: #fde047; }
+.lane-name.green { color: #86efac; }
 
 .track {
     position: relative;
     height: 48px;
+    overflow: hidden;
+    border: 2px solid #f8fafc;
+    border-radius: 8px;
     background: repeating-linear-gradient(
         90deg,
-        #e5e7eb 0px,
-        #e5e7eb 35px,
-        #cbd5e1 35px,
-        #cbd5e1 70px
+        #dbe4ee 0,
+        #dbe4ee 34px,
+        #cbd5e1 34px,
+        #cbd5e1 68px
     );
-    border: 2px solid white;
-    border-radius: 8px;
-    overflow: hidden;
+}
+
+.track::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 40px;
+    width: 2px;
+    border-left: 2px dashed #64748b;
 }
 
 .robot {
     position: absolute;
-    top: 2px;
+    top: 4px;
     left: 0%;
-    font-size: 30px;
-    transition: left 0.7s ease;
+    font-size: 29px;
+    line-height: 34px;
+    transition: left 0.65s ease;
     z-index: 2;
+    transform: translateX(0);
+    filter: drop-shadow(0 2px 2px #0005);
 }
 
-.robot-1 { filter: drop-shadow(0 0 4px #38bdf8); }
-.robot-2 { filter: drop-shadow(0 0 4px #fb7185); }
-.robot-3 { filter: drop-shadow(0 0 4px #facc15); }
-.robot-4 { filter: drop-shadow(0 0 4px #4ade80); }
+.robot.blue { filter: drop-shadow(0 0 5px #38bdf8); }
+.robot.red { filter: drop-shadow(0 0 5px #fb7185); }
+.robot.yellow { filter: drop-shadow(0 0 5px #facc15); }
+.robot.green { filter: drop-shadow(0 0 5px #4ade80); }
 
-.finish-line {
+.finish {
     position: absolute;
-    right: 0;
-    top: 4px;
-    font-size: 30px;
+    right: 1px;
+    top: 5px;
+    font-size: 29px;
+    line-height: 32px;
     z-index: 1;
 }
-button {
-  border:0;
-  border-radius:9px;
-  padding:11px 13px;
-  font-size:14px;
-  font-weight:bold;
-  cursor:pointer;
-  touch-action:manipulation;
+
+.race-score {
+    position: absolute;
+    right: 44px;
+    top: 15px;
+    color: #111827;
+    font-size: 11px;
+    font-weight: bold;
+    z-index: 3;
 }
-button:disabled { opacity:.5; cursor:not-allowed; }
-.primary { background:var(--green); color:#102018; }
-.secondary { background:#34445f; color:white; }
-.status {
-  text-align:center;
-  color:var(--muted);
-  font-size:13px;
-  line-height:1.5;
-  margin:10px 0;
+
+.race-legend {
+    text-align: center;
+    font-size: 12px;
+    color: #cbd5e1;
+    margin-top: 17px;
 }
-.settings {
-  max-width:700px;
-  margin:0 auto 14px;
-  padding:14px;
-  border:1px solid #34445f;
-  background:var(--panel);
-  border-radius:12px;
+
+/* PANEL PERLOMBAAN */
+.game-info {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 16px;
 }
-.settings label { display:block; margin-bottom:6px; color:var(--muted); }
-.settings input {
-  width:100%;
-  background:#101827;
-  border:1px solid #475873;
-  color:white;
-  padding:11px;
-  border-radius:8px;
-  font-size:14px;
+
+.info-box {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 18px;
+    text-align: center;
+    min-width: 125px;
 }
-.settings .actions {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  margin-top:10px;
+
+.info-box strong {
+    display: block;
+    color: #1d4ed8;
+    font-size: 22px;
+    margin-bottom: 4px;
 }
-.settings .actions button { flex:1; }
-.groups {
-  display:grid;
-  grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:10px;
-  align-items:stretch;
+
+.info-box span {
+    color: #64748b;
+    font-size: 12px;
 }
-.group {
-  --color:#60a5fa;
-  min-width:0;
-  background:var(--panel);
-  border:2px solid var(--color);
-  border-radius:13px;
-  overflow:hidden;
-  display:flex;
-  flex-direction:column;
+
+/* EMPAT KELOMPOK */
+.groups-container {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    padding: 0 14px 24px;
+    max-width: 1800px;
+    margin: auto;
+    align-items: start;
 }
-.group-head {
-  text-align:center;
-  background:color-mix(in srgb,var(--color) 17%,#192438);
-  padding:12px 5px;
-  border-bottom:1px solid #34445f;
+
+.group-card {
+    background: white;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid #e2e8f0;
+    box-shadow: 0 4px 12px #0f172a0b;
+    min-width: 0;
 }
-.group-head h2 {
-  color:var(--color);
-  margin:0 0 5px;
-  font-size:clamp(13px,1.7vw,21px);
+
+.group-card.blue { border-color: #38bdf8; }
+.group-card.red { border-color: #fb7185; }
+.group-card.yellow { border-color: #facc15; }
+.group-card.green { border-color: #4ade80; }
+
+.group-header {
+    padding: 15px 10px;
+    color: white;
+    text-align: center;
 }
-.group-head .robot-icon { font-size:34px; }
-.score { font-size:20px; font-weight:bold; margin-top:4px; }
-.progress-area { padding:10px 9px 0; }
-.progress-label {
-  display:flex;
-  justify-content:space-between;
-  gap:3px;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:8px;
+
+.group-header.blue { background: #0284c7; }
+.group-header.red { background: #e11d48; }
+.group-header.yellow { background: #ca8a04; }
+.group-header.green { background: #15803d; }
+
+.group-header h2 {
+    font-size: 17px;
+    margin: 0 0 7px;
 }
-.race-track {
-  height:35px;
-  border-radius:18px;
-  background:#0c1422;
-  border:1px solid #475873;
-  position:relative;
-  overflow:hidden;
+
+.group-header .points {
+    font-size: 25px;
+    font-weight: bold;
 }
-.race-fill {
-  position:absolute;
-  top:0;
-  bottom:0;
-  left:0;
-  width:0%;
-  background:color-mix(in srgb,var(--color) 30%,transparent);
-  transition:width .3s ease;
+
+.group-header small {
+    display: block;
+    margin-top: 4px;
+    opacity: 0.9;
 }
-.race-robot {
-  position:absolute;
-  top:1px;
-  left:0%;
-  transform:translateX(-2%);
-  font-size:25px;
-  transition:left .3s ease;
+
+.group-body {
+    padding: 13px;
 }
-.question-area {
-  padding:12px 10px;
-  display:flex;
-  flex-direction:column;
-  flex:1;
+
+.progress-text {
+    display: flex;
+    justify-content: space-between;
+    gap: 5px;
+    color: #64748b;
+    font-size: 11px;
+    margin-bottom: 7px;
 }
+
+.progress-bar {
+    height: 8px;
+    border-radius: 99px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 15px;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    transition: width 0.4s;
+}
+
+.progress-fill.blue { background: #0284c7; }
+.progress-fill.red { background: #e11d48; }
+.progress-fill.yellow { background: #ca8a04; }
+.progress-fill.green { background: #16a34a; }
+
 .question-number {
-  color:var(--color);
-  font-weight:bold;
-  font-size:12px;
-  margin-bottom:8px;
+    color: #64748b;
+    font-size: 12px;
+    margin-bottom: 8px;
 }
-.question {
-  font-size:clamp(13px,1.35vw,17px);
-  line-height:1.45;
-  font-weight:bold;
-  margin:0 0 12px;
-  overflow-wrap:anywhere;
+
+.question-text {
+    font-size: 15px;
+    line-height: 1.5;
+    font-weight: bold;
+    min-height: 68px;
+    margin: 0 0 13px;
+    overflow-wrap: anywhere;
 }
+
 .answers {
-  display:flex;
-  flex-direction:column;
-  gap:8px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
 }
-.answer {
-  width:100%;
-  min-height:44px;
-  text-align:left;
-  line-height:1.35;
-  background:#263650;
-  color:white;
-  border:1px solid #435570;
-  padding:10px;
-  font-size:clamp(12px,1.2vw,15px);
-  overflow-wrap:anywhere;
+
+.answer-btn {
+    text-align: left;
+    padding: 11px 10px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    border-radius: 9px;
+    color: #1e293b;
+    font-size: 13px;
+    line-height: 1.4;
+    min-height: 43px;
+    overflow-wrap: anywhere;
+    transition: background 0.15s;
 }
-.answer:active:not(:disabled) { transform:scale(.98); }
-.answer.correct {
-  background:#166534;
-  border-color:#4ade80;
+
+.answer-btn:hover:not(:disabled) {
+    background: #dbeafe;
+    border-color: #60a5fa;
 }
-.answer.wrong {
-  background:#7f1d1d;
-  border-color:#fb7185;
+
+.answer-btn:disabled {
+    cursor: default;
+    opacity: 0.88;
 }
+
+.answer-btn.correct {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #166534;
+}
+
+.answer-btn.wrong {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #991b1b;
+}
+
 .feedback {
-  min-height:48px;
-  padding-top:10px;
-  font-size:12px;
-  font-weight:bold;
-  line-height:1.5;
-  overflow-wrap:anywhere;
+    margin-top: 12px;
+    min-height: 39px;
+    font-size: 12px;
+    line-height: 1.5;
+    font-weight: bold;
 }
-.group-done {
-  display:none;
-  margin-top:auto;
-  padding:10px 5px;
-  text-align:center;
-  color:var(--green);
-  font-weight:bold;
+
+.feedback.good { color: #15803d; }
+.feedback.bad { color: #dc2626; }
+.feedback.neutral { color: #64748b; }
+
+.group-finished {
+    text-align: center;
+    background: #f0fdf4;
+    border-radius: 10px;
+    padding: 18px 10px;
+    color: #166534;
+    font-weight: bold;
+    line-height: 1.6;
 }
+
+.start-panel {
+    text-align: center;
+    padding: 8px 15px 26px;
+}
+
+.start-panel p {
+    color: #64748b;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.start-btn {
+    border: none;
+    background: linear-gradient(120deg, #15803d, #22c55e);
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 12px;
+    padding: 15px 30px;
+    box-shadow: 0 5px 12px #15803d30;
+}
+
+.start-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.result-panel {
+    display: none;
+    margin: 10px 14px 25px;
+    padding: 24px;
+    border-radius: 16px;
+    background: white;
+    text-align: center;
+    border: 2px solid #facc15;
+}
+
+.result-panel h2 {
+    margin-top: 0;
+    color: #92400e;
+}
+
+.result-list {
+    list-style: none;
+    padding: 0;
+    margin: 15px auto;
+    max-width: 500px;
+}
+
+.result-list li {
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 8px;
+    margin: 7px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-weight: bold;
+}
+
 footer {
-  text-align:center;
-  color:var(--muted);
-  margin:18px 0 5px;
-  font-size:13px;
-  line-height:1.7;
+    text-align: center;
+    padding: 22px 12px;
+    background: #111827;
+    color: #e2e8f0;
+    font-size: 13px;
 }
-footer a { color:#93c5fd; text-decoration:none; }
-#result {
-  display:none;
-  max-width:700px;
-  margin:16px auto;
-  background:#443817;
-  border:1px solid #8b782b;
-  border-radius:13px;
-  text-align:center;
-  padding:20px;
+
+footer a {
+    color: #7dd3fc;
+    text-decoration: none;
+    font-weight: bold;
 }
-#result h2 { color:#facc15; }
-#result ol {
-  display:inline-block;
-  text-align:left;
-  line-height:1.8;
+
+@media (max-width: 1100px) {
+    .groups-container {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
-@media(max-width:600px) {
-  body { padding:5px; }
-  .groups { gap:4px; }
-  .group { border-radius:8px; border-width:1px; }
-  .group-head { padding:8px 2px; }
-  .group-head .robot-icon { font-size:25px; }
-  .score { font-size:15px; }
-  .progress-area { padding:7px 4px 0; }
-  .progress-label { font-size:9px; }
-  .race-track { height:26px; }
-  .race-robot { font-size:19px; }
-  .question-area { padding:8px 4px; }
-  .question { font-size:12px; }
-  .question-number { font-size:10px; }
-  .answer { padding:8px 4px; min-height:48px; font-size:11px; }
-  .feedback { font-size:10px; min-height:56px; }
-  .group-head h2 { font-size:12px; }
+
+@media (max-width: 600px) {
+    .race-arena {
+        padding: 14px 10px;
+        margin: 10px auto;
+        width: calc(100% - 16px);
+    }
+
+    .race-lane {
+        grid-template-columns: 85px minmax(0, 1fr);
+        gap: 7px;
+    }
+
+    .lane-name {
+        font-size: 10px;
+    }
+
+    .track {
+        height: 42px;
+    }
+
+    .robot {
+        font-size: 25px;
+        top: 2px;
+    }
+
+    .finish {
+        font-size: 25px;
+        top: 3px;
+    }
+
+    .groups-container {
+        grid-template-columns: 1fr;
+        padding: 0 9px 20px;
+    }
+
+    .question-text {
+        min-height: 0;
+    }
+
+    .group-header h2 {
+        font-size: 19px;
+    }
 }
-@media(min-width:900px) {
-  .question-area { padding:16px 13px; }
-  .answers { gap:10px; }
-  .answer { min-height:55px; padding:12px; }
+
+@media (min-width: 601px) and (max-width: 1100px) {
+    .question-text {
+        min-height: 85px;
+    }
 }
 </style>
 </head>
 
 <body>
-<header>
-  <div style="font-size:40px">🏁 🤖 🏁</div>
-  <h1>BALAP ROBOT CERDAS</h1>
-  <p>4 Kelompok • 50 Soal • Balapan Pengetahuan</p>
+
+<header class="top-header">
+    <h1>🏁 BALAP ROBOT CERDAS 🤖</h1>
+    <p>Jawab soal dengan benar, kumpulkan poin, dan jadilah juara!</p>
 </header>
 
-<section class="settings">
-  <label for="sheetId">ID Google Spreadsheet</label>
-  <input id="sheetId" type="text"
-    value="1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU"
-    placeholder="Masukkan ID spreadsheet">
+<div class="toolbar">
+    <input
+        id="sheetId"
+        type="text"
+        value="1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU"
+        aria-label="Google Spreadsheet ID"
+        placeholder="Masukkan ID Google Spreadsheet"
+    >
+    <button class="btn-primary" id="loadSheetBtn" onclick="loadQuestions()">
+        📚 Muat Soal Spreadsheet
+    </button>
+    <button class="btn-dark" onclick="toggleFullscreen()">
+        ⛶ Layar Penuh
+    </button>
+</div>
 
-  <div class="actions">
-    <button class="secondary" id="loadBtn">📄 Muat Soal</button>
-    <button class="primary" id="startBtn">▶ Mulai Balapan</button>
-    <button class="secondary" id="fullBtn">⛶ Layar Penuh</button>
-  </div>
-  <div id="loadStatus" class="status">
-    Soal cadangan tersedia. Muat spreadsheet untuk menggunakan soal milikmu.
-  </div>
-  
-<!-- ARENA BALAPAN ROBOT -->
+<div id="status" class="status">
+    Game siap. Muat soal spreadsheet atau gunakan soal contoh.
+</div>
+
+<!-- ARENA BALAPAN DI ATAS SOAL -->
 <section class="race-arena">
-    <h2>🏁 BALAP ROBOT CERDAS 🏁</h2>
+    <h2 class="race-title">🏎️ ARENA BALAPAN ROBOT 🏁</h2>
+    <p class="race-subtitle">
+        Jawaban benar membuat robot melaju menuju garis finis!
+    </p>
 
-    <div class="race-track">
+    <div class="race-lanes">
+
         <div class="race-lane">
-            <span class="lane-label">KELOMPOK 1</span>
+            <div class="lane-name blue">
+                KELOMPOK 1
+                <span id="raceScore1">0 / 50 benar</span>
+            </div>
             <div class="track">
-                <div class="robot robot-1" id="robot1">🤖</div>
-                <span class="finish-line">🏁</span>
+                <div class="robot blue" id="robot1">🤖</div>
+                <span class="race-score" id="racePercent1">0%</span>
+                <span class="finish">🏁</span>
             </div>
         </div>
 
         <div class="race-lane">
-            <span class="lane-label">KELOMPOK 2</span>
+            <div class="lane-name red">
+                KELOMPOK 2
+                <span id="raceScore2">0 / 50 benar</span>
+            </div>
             <div class="track">
-                <div class="robot robot-2" id="robot2">🤖</div>
-                <span class="finish-line">🏁</span>
+                <div class="robot red" id="robot2">🤖</div>
+                <span class="race-score" id="racePercent2">0%</span>
+                <span class="finish">🏁</span>
             </div>
         </div>
 
         <div class="race-lane">
-            <span class="lane-label">KELOMPOK 3</span>
+            <div class="lane-name yellow">
+                KELOMPOK 3
+                <span id="raceScore3">0 / 50 benar</span>
+            </div>
             <div class="track">
-                <div class="robot robot-3" id="robot3">🤖</div>
-                <span class="finish-line">🏁</span>
+                <div class="robot yellow" id="robot3">🤖</div>
+                <span class="race-score" id="racePercent3">0%</span>
+                <span class="finish">🏁</span>
             </div>
         </div>
 
         <div class="race-lane">
-            <span class="lane-label">KELOMPOK 4</span>
+            <div class="lane-name green">
+                KELOMPOK 4
+                <span id="raceScore4">0 / 50 benar</span>
+            </div>
             <div class="track">
-                <div class="robot robot-4" id="robot4">🤖</div>
-                <span class="finish-line">🏁</span>
+                <div class="robot green" id="robot4">🤖</div>
+                <span class="race-score" id="racePercent4">0%</span>
+                <span class="finish">🏁</span>
             </div>
         </div>
+
+    </div>
+
+    <div class="race-legend">
+        ⭐ Setiap jawaban benar = 10 poin • Robot melaju sesuai jumlah jawaban benar
     </div>
 </section>
-<!-- AKHIR ARENA BALAPAN -->
-<main class="groups" id="groups"></main>
 
-<section id="result">
-  <div style="font-size:48px">🏆</div>
-  <h2>Balapan Selesai!</h2>
-  <p id="winnerText"></p>
-  <h3>Peringkat Kelompok</h3>
-  <ol id="ranking"></ol>
-  <button class="primary" onclick="startGame()">🔄 Main Lagi</button>
+<div class="game-info">
+    <div class="info-box">
+        <strong id="roundInfo">50</strong>
+        <span>Soal per kelompok</span>
+    </div>
+    <div class="info-box">
+        <strong>10</strong>
+        <span>Poin jawaban benar</span>
+    </div>
+    <div class="info-box">
+        <strong>500</strong>
+        <span>Skor maksimal</span>
+    </div>
+    <div class="info-box">
+        <strong id="questionBankCount">20</strong>
+        <span>Soal tersedia</span>
+    </div>
+</div>
+
+<div class="start-panel">
+    <p>
+        Empat kelompok bermain secara bersamaan di satu monitor.
+        Setiap kelompok memiliki soal dan pilihan jawaban sendiri.
+    </p>
+    <button class="start-btn" id="startBtn" onclick="startGame()">
+        🚀 MULAI BALAPAN!
+    </button>
+</div>
+
+<!-- KARTU SOAL KELOMPOK 1-4 -->
+<main class="groups-container" id="groupsContainer">
+
+    <section class="group-card blue">
+        <div class="group-header blue">
+            <h2>🤖 KELOMPOK 1</h2>
+            <div class="points" id="score1">0</div>
+            <small>POIN</small>
+        </div>
+        <div class="group-body">
+            <div class="progress-text">
+                <span id="progressText1">Belum mulai</span>
+                <span id="answered1">0 / 50</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill blue" id="progressFill1"></div>
+            </div>
+            <div class="question-number" id="questionNumber1">Soal belum dimulai</div>
+            <p class="question-text" id="question1">
+                Tekan tombol MULAI BALAPAN untuk bermain.
+            </p>
+            <div class="answers" id="answers1"></div>
+            <div class="feedback" id="feedback1"></div>
+        </div>
+    </section>
+
+    <section class="group-card red">
+        <div class="group-header red">
+            <h2>🤖 KELOMPOK 2</h2>
+            <div class="points" id="score2">0</div>
+            <small>POIN</small>
+        </div>
+        <div class="group-body">
+            <div class="progress-text">
+                <span id="progressText2">Belum mulai</span>
+                <span id="answered2">0 / 50</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill red" id="progressFill2"></div>
+            </div>
+            <div class="question-number" id="questionNumber2">Soal belum dimulai</div>
+            <p class="question-text" id="question2">
+                Tekan tombol MULAI BALAPAN untuk bermain.
+            </p>
+            <div class="answers" id="answers2"></div>
+            <div class="feedback" id="feedback2"></div>
+        </div>
+    </section>
+
+    <section class="group-card yellow">
+        <div class="group-header yellow">
+            <h2>🤖 KELOMPOK 3</h2>
+            <div class="points" id="score3">0</div>
+            <small>POIN</small>
+        </div>
+        <div class="group-body">
+            <div class="progress-text">
+                <span id="progressText3">Belum mulai</span>
+                <span id="answered3">0 / 50</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill yellow" id="progressFill3"></div>
+            </div>
+            <div class="question-number" id="questionNumber3">Soal belum dimulai</div>
+            <p class="question-text" id="question3">
+                Tekan tombol MULAI BALAPAN untuk bermain.
+            </p>
+            <div class="answers" id="answers3"></div>
+            <div class="feedback" id="feedback3"></div>
+        </div>
+    </section>
+
+    <section class="group-card green">
+        <div class="group-header green">
+            <h2>🤖 KELOMPOK 4</h2>
+            <div class="points" id="score4">0</div>
+            <small>POIN</small>
+        </div>
+        <div class="group-body">
+            <div class="progress-text">
+                <span id="progressText4">Belum mulai</span>
+                <span id="answered4">0 / 50</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill green" id="progressFill4"></div>
+            </div>
+            <div class="question-number" id="questionNumber4">Soal belum dimulai</div>
+            <p class="question-text" id="question4">
+                Tekan tombol MULAI BALAPAN untuk bermain.
+            </p>
+            <div class="answers" id="answers4"></div>
+            <div class="feedback" id="feedback4"></div>
+        </div>
+    </section>
+
+</main>
+
+<section class="result-panel" id="resultPanel">
+    <h2>🏆 HASIL AKHIR BALAPAN 🏆</h2>
+    <p id="winnerText"></p>
+    <ol class="result-list" id="resultList"></ol>
+    <button class="start-btn" onclick="restartGame()">
+        🔄 MAIN LAGI
+    </button>
 </section>
 
 <footer>
-  Dibuat oleh: <strong>Tiwi Faira Haqki</strong><br>
-  Instagram:
-  <a href="https://www.instagram.com/tiwifh/"
-     target="_blank" rel="noopener noreferrer">@tiwifh</a>
+    <div>Dibuat oleh <strong>Tiwi Faira Haqki</strong></div>
+    <div style="margin-top:6px">
+        Instagram:
+        <a href="https://www.instagram.com/tiwifh/"
+           target="_blank" rel="noopener noreferrer">@tiwifh</a>
+    </div>
 </footer>
 
 <script>
-const DEFAULT_SHEET_ID =
-  "1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU";
+"use strict";
 
 const TOTAL_QUESTIONS = 50;
+const POINTS_PER_CORRECT = 10;
 
-const groupInfo = [
-  { name:"KELOMPOK 1", color:"#60a5fa", robot:"🤖" },
-  { name:"KELOMPOK 2", color:"#fb7185", robot:"🤖" },
-  { name:"KELOMPOK 3", color:"#4ade80", robot:"🤖" },
-  { name:"KELOMPOK 4", color:"#c084fc", robot:"🤖" }
+const GROUPS = [
+    { id: 1, name: "KELOMPOK 1", color: "blue" },
+    { id: 2, name: "KELOMPOK 2", color: "red" },
+    { id: 3, name: "KELOMPOK 3", color: "yellow" },
+    { id: 4, name: "KELOMPOK 4", color: "green" }
 ];
 
-const fallbackQuestions = [
-  {q:"Apa ibu kota Indonesia?",correct:"Jakarta",wrong:["Bandung","Surabaya"]},
-  {q:"Berapa hasil 12 × 8?",correct:"96",wrong:["86","108"]},
-  {q:"Planet yang dikenal sebagai Planet Merah adalah?",correct:"Mars",wrong:["Venus","Jupiter"]},
-  {q:"Apa kepanjangan CPU?",correct:"Central Processing Unit",wrong:["Computer Personal Utility","Central Program Unit"]},
-  {q:"Hewan yang dikenal sebagai raja hutan adalah?",correct:"Singa",wrong:["Gajah","Kuda"]},
-  {q:"Berapa jumlah sisi pada segitiga?",correct:"3",wrong:["4","5"]},
-  {q:"Air membeku pada suhu berapa derajat Celsius?",correct:"0°C",wrong:["10°C","100°C"]},
-  {q:"Bahasa untuk membuat struktur halaman web adalah?",correct:"HTML",wrong:["SQL","Photoshop"]},
-  {q:"Benua terbesar di dunia adalah?",correct:"Asia",wrong:["Afrika","Eropa"]},
-  {q:"Apa nama satelit alami Bumi?",correct:"Bulan",wrong:["Matahari","Mars"]},
-  {q:"Berapa hasil 144 ÷ 12?",correct:"12",wrong:["10","14"]},
-  {q:"Organ tubuh yang memompa darah adalah?",correct:"Jantung",wrong:["Paru-paru","Ginjal"]},
-  {q:"Apa rumus kimia air?",correct:"H2O",wrong:["CO2","O2"]},
-  {q:"Ulat akan berkembang menjadi?",correct:"Kupu-kupu",wrong:["Kucing","Ikan"]},
-  {q:"Berapa jumlah hari dalam satu minggu?",correct:"7",wrong:["5","10"]},
-  {q:"Alat untuk mengukur suhu adalah?",correct:"Termometer",wrong:["Barometer","Speedometer"]},
-  {q:"Campuran warna merah dan kuning menghasilkan?",correct:"Jingga",wrong:["Hijau","Ungu"]},
-  {q:"Proses tumbuhan membuat makanan disebut?",correct:"Fotosintesis",wrong:["Evaporasi","Kondensasi"]},
-  {q:"Berapa bulan dalam satu tahun?",correct:"12",wrong:["10","11"]},
-  {q:"Berapa hasil 9 × 9?",correct:"81",wrong:["72","99"]}
+/*
+  FORMAT GOOGLE SPREADSHEET:
+  Kolom A = Pertanyaan
+  Kolom B = Jawaban benar
+  Kolom C = Pilihan salah 1
+  Kolom D = Pilihan salah 2
+
+  Pastikan spreadsheet dapat diakses oleh
+  Anyone with the link / Siapa saja yang memiliki link.
+*/
+
+const FALLBACK_QUESTIONS = [
+    {
+        q: "Apa ibu kota Indonesia?",
+        a: "Jakarta",
+        w: ["Bandung", "Surabaya"]
+    },
+    {
+        q: "Berapa hasil 5 + 7?",
+        a: "12",
+        w: ["10", "13"]
+    },
+    {
+        q: "Planet tempat manusia tinggal adalah?",
+        a: "Bumi",
+        w: ["Mars", "Venus"]
+    },
+    {
+        q: "Hewan yang dikenal sebagai raja hutan adalah?",
+        a: "Singa",
+        w: ["Kelinci", "Kambing"]
+    },
+    {
+        q: "Berapa jumlah hari dalam satu minggu?",
+        a: "7 hari",
+        w: ["5 hari", "10 hari"]
+    },
+    {
+        q: "Warna bendera Indonesia adalah?",
+        a: "Merah dan putih",
+        w: ["Biru dan putih", "Hijau dan kuning"]
+    },
+    {
+        q: "Alat untuk menulis di papan tulis adalah?",
+        a: "Spidol",
+        w: ["Sendok", "Sisir"]
+    },
+    {
+        q: "Berapa hasil 10 × 3?",
+        a: "30",
+        w: ["13", "20"]
+    },
+    {
+        q: "Matahari terbit dari arah?",
+        a: "Timur",
+        w: ["Barat", "Utara"]
+    },
+    {
+        q: "Hewan yang hidup di air dan bernapas dengan insang adalah?",
+        a: "Ikan",
+        w: ["Kucing", "Ayam"]
+    },
+    {
+        q: "Berapa jumlah bulan dalam satu tahun?",
+        a: "12 bulan",
+        w: ["10 bulan", "14 bulan"]
+    },
+    {
+        q: "Alat untuk melihat benda yang sangat kecil adalah?",
+        a: "Mikroskop",
+        w: ["Teleskop", "Termometer"]
+    },
+    {
+        q: "Apa nama satelit alami Bumi?",
+        a: "Bulan",
+        w: ["Matahari", "Mars"]
+    },
+    {
+        q: "Berapa hasil 20 - 8?",
+        a: "12",
+        w: ["10", "14"]
+    },
+    {
+        q: "Bahasa nasional Indonesia adalah?",
+        a: "Bahasa Indonesia",
+        w: ["Bahasa Jepang", "Bahasa Korea"]
+    },
+    {
+        q: "Organ tubuh yang digunakan untuk melihat adalah?",
+        a: "Mata",
+        w: ["Telinga", "Hidung"]
+    },
+    {
+        q: "Air membeku menjadi?",
+        a: "Es",
+        w: ["Uap", "Pasir"]
+    },
+    {
+        q: "Berapa hasil 4 × 4?",
+        a: "16",
+        w: ["8", "12"]
+    },
+    {
+        q: "Hewan yang menghasilkan madu adalah?",
+        a: "Lebah",
+        w: ["Semut", "Kupu-kupu"]
+    },
+    {
+        q: "Alat untuk mengukur suhu adalah?",
+        a: "Termometer",
+        w: ["Penggaris", "Kompas"]
+    }
 ];
 
-let questions = [...fallbackQuestions];
-let decks = [[],[],[],[]];
-let answered = [0,0,0,0];
-let scores = [0,0,0,0];
-let busy = [false,false,false,false];
+let questionBank = FALLBACK_QUESTIONS.map(q => ({
+    q: q.q,
+    a: q.a,
+    w: [...q.w]
+}));
+
 let gameRunning = false;
-let completed = [false,false,false,false];
+let gameStarting = false;
+let gameFinished = false;
+let usingSpreadsheet = false;
+let groupsState = [];
 
-const $ = id => document.getElementById(id);
-
-function shuffle(arr) {
-  const a = [...arr];
-  for(let i=a.length-1;i>0;i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
+function setStatus(message, type = "") {
+    const status = document.getElementById("status");
+    status.textContent = message;
+    status.className = "status" + (type ? " " + type : "");
 }
 
-function escapeHTML(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",
-    '"':"&quot;","'":"&#39;"
-  })[c]);
-}
+function shuffle(array) {
+    const result = [...array];
 
-function buildGroups() {
-  $("groups").innerHTML = groupInfo.map((g,i) => `
-    <section class="group" id="group${i}"
-      style="--color:${g.color}">
-      <div class="group-head">
-        <div class="robot-icon">${g.robot}</div>
-        <h2>${g.name}</h2>
-        <div class="score" id="score${i}">0 poin</div>
-      </div>
-
-      <div class="progress-area">
-        <div class="progress-label">
-          <span>Progres balapan</span>
-          <span id="progressText${i}">0/50</span>
-        </div>
-        <div class="race-track">
-          <div class="race-fill" id="fill${i}"></div>
-          <div class="race-robot" id="raceRobot${i}">${g.robot}</div>
-        </div>
-      </div>
-
-      <div class="question-area">
-        <div class="question-number" id="number${i}">
-          MENUNGGU PERMAINAN
-        </div>
-        <p class="question" id="question${i}">
-          Tekan Mulai Balapan untuk memulai.
-        </p>
-        <div class="answers" id="answers${i}"></div>
-        <div class="feedback" id="feedback${i}"></div>
-        <div class="group-done" id="done${i}">
-          🏁 SELESAI!
-        </div>
-      </div>
-    </section>
-  `).join("");
-}
-
-function updateProgress(i) {
-  const pct = answered[i] / TOTAL_QUESTIONS * 100;
-  $("score"+i).textContent = scores[i] + " poin";
-  $("progressText"+i).textContent =
-    answered[i] + "/" + TOTAL_QUESTIONS;
-  $("fill"+i).style.width = pct + "%";
-  $("raceRobot"+i).style.left = Math.min(95,pct*0.95) + "%";
-}
-
-function prepareDecks() {
-  decks = [[],[],[],[]];
-
-  // Setiap ronde mengambil empat soal berbeda jika tersedia.
-  for(let round=0;round<TOTAL_QUESTIONS;round++) {
-    const pool = shuffle(questions);
-    const used = new Set();
-
-    for(let g=0;g<4;g++) {
-      let question = pool.find(q => !used.has(q));
-      if(!question) {
-        question = pool[g % pool.length];
-      }
-      used.add(question);
-
-      const options = shuffle([
-        {text:question.correct,isCorrect:true},
-        ...question.wrong.map(text => ({text,isCorrect:false}))
-      ]);
-
-      decks[g].push({
-        q:question.q,
-        options:options
-      });
+    for (let i = result.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [result[i], result[j]] = [result[j], result[i]];
     }
-  }
+
+    return result;
 }
 
-function showQuestion(i) {
-  if(!gameRunning || completed[i]) return;
-
-  if(answered[i] >= TOTAL_QUESTIONS) {
-    completeGroup(i);
-    return;
-  }
-
-  const q = decks[i][answered[i]];
-  $("number"+i).textContent =
-    groupInfo[i].name + " • SOAL " + (answered[i]+1) + " DARI 50";
-  $("question"+i).textContent = q.q;
-  $("feedback"+i).textContent = "";
-  $("answers"+i).innerHTML = "";
-
-  q.options.forEach((option,index) => {
-    const btn = document.createElement("button");
-    btn.className = "answer";
-    btn.textContent = String.fromCharCode(65+index) + ". " + option.text;
-    btn.addEventListener("click", () => answerQuestion(i,index));
-    $("answers"+i).appendChild(btn);
-  });
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    })[char]);
 }
 
-function answerQuestion(i,selected) {
-  if(!gameRunning || busy[i] || completed[i]) return;
+function updateBankCount() {
+    document.getElementById("questionBankCount").textContent =
+        questionBank.length;
+}
 
-  busy[i] = true;
-  const q = decks[i][answered[i]];
-  const buttons = [...$("answers"+i).querySelectorAll("button")];
-  buttons.forEach(b => b.disabled = true);
-
-  if(q.options[selected].isCorrect) {
-    scores[i] += 10;
-    buttons[selected].classList.add("correct");
-    $("feedback"+i).textContent = "✅ Benar! Robot maju 10 poin.";
-    $("feedback"+i).style.color = "#4ade80";
-  } else {
-    buttons[selected].classList.add("wrong");
-    const correctIndex = q.options.findIndex(o => o.isCorrect);
-    if(correctIndex >= 0) buttons[correctIndex].classList.add("correct");
-    $("feedback"+i).textContent = "❌ Salah! Robot tidak maju.";
-    $("feedback"+i).style.color = "#fb7185";
-  }
-
-  answered[i]++;
-  updateProgress(i);
-
-  setTimeout(() => {
-    busy[i] = false;
-
-    if(answered[i] >= TOTAL_QUESTIONS) {
-      completeGroup(i);
-    } else {
-      showQuestion(i);
+function normalizeQuestion(row) {
+    if (!Array.isArray(row) || row.length < 4) {
+        return null;
     }
-  },900);
+
+    const q = String(row[0] ?? "").trim();
+    const a = String(row[1] ?? "").trim();
+    const w1 = String(row[2] ?? "").trim();
+    const w2 = String(row[3] ?? "").trim();
+
+    if (!q || !a || !w1 || !w2) {
+        return null;
+    }
+
+    if (new Set([a, w1, w2]).size < 3) {
+        return null;
+    }
+
+    return {
+        q: q,
+        a: a,
+        w: [w1, w2]
+    };
 }
 
-function completeGroup(i) {
-  completed[i] = true;
-  busy[i] = false;
-  $("number"+i).textContent = "50 SOAL SELESAI";
-  $("question"+i).textContent = "Hebat! Kamu telah menyelesaikan semua soal.";
-  $("answers"+i).innerHTML = "";
-  $("feedback"+i).textContent = "Total skor: " + scores[i] + " poin.";
-  $("feedback"+i).style.color = groupInfo[i].color;
-  $("done"+i).style.display = "block";
+async function loadQuestions() {
+    if (gameRunning || gameStarting) {
+        setStatus("Soal tidak dapat diganti ketika permainan berlangsung.", "error");
+        return;
+    }
 
-  if(completed.every(Boolean)) finishGame();
+    const sheetId = document.getElementById("sheetId").value.trim();
+
+    if (!sheetId) {
+        setStatus("Masukkan ID Google Spreadsheet terlebih dahulu.", "error");
+        return;
+    }
+
+    const button = document.getElementById("loadSheetBtn");
+    button.disabled = true;
+    button.textContent = "Memuat soal...";
+
+    setStatus("Sedang mengambil soal dari Google Spreadsheet...");
+
+    try {
+        const url =
+            "https://docs.google.com/spreadsheets/d/" +
+            encodeURIComponent(sheetId) +
+            "/gviz/tq?tqx=out:json";
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Spreadsheet tidak dapat dibuka.");
+        }
+
+        const raw = await response.text();
+
+        const start = raw.indexOf("{");
+        const end = raw.lastIndexOf("}");
+
+        if (start < 0 || end < 0) {
+            throw new Error("Format data spreadsheet tidak dikenali.");
+        }
+
+        const data = JSON.parse(raw.slice(start, end + 1));
+
+        if (
+            !data.table ||
+            !Array.isArray(data.table.rows)
+        ) {
+            throw new Error("Data soal tidak ditemukan.");
+        }
+
+        const loaded = data.table.rows
+            .map(row => {
+                const cells = row.c || [];
+                return cells.map(cell =>
+                    cell && cell.v !== null && cell.v !== undefined
+                        ? String(cell.v).trim()
+                        : ""
+                );
+            })
+            .map(normalizeQuestion)
+            .filter(Boolean);
+
+        if (loaded.length < 4) {
+            throw new Error(
+                "Minimal harus ada 4 soal valid. Periksa kolom A, B, C, dan D."
+            );
+        }
+
+        questionBank = loaded;
+        usingSpreadsheet = true;
+        updateBankCount();
+
+        setStatus(
+            "Berhasil memuat " + questionBank.length +
+            " soal dari Google Spreadsheet. Siap bermain!",
+            "success"
+        );
+
+    } catch (error) {
+        usingSpreadsheet = false;
+
+        setStatus(
+            "Gagal memuat spreadsheet: " + error.message +
+            " Pastikan link dapat diakses oleh siapa saja. Soal contoh tetap tersedia.",
+            "error"
+        );
+
+    } finally {
+        button.disabled = false;
+        button.textContent = "📚 Muat Soal Spreadsheet";
+    }
+}
+
+function createGroupState(index) {
+    const deck = [];
+
+    // Setiap kelompok memperoleh urutan soal acak.
+    // Jika soal kurang dari 50, soal akan diacak ulang
+    // dan beberapa soal dapat muncul kembali.
+    while (deck.length < TOTAL_QUESTIONS) {
+        deck.push(...shuffle(questionBank));
+    }
+
+    return {
+        index: index,
+        score: 0,
+        correct: 0,
+        answered: 0,
+        deck: deck.slice(0, TOTAL_QUESTIONS),
+        currentQuestion: null,
+        locked: false,
+        finished: false
+    };
 }
 
 function startGame() {
-  gameRunning = false;
-  answered = [0,0,0,0];
-  scores = [0,0,0,0];
-  busy = [false,false,false,false];
-  completed = [false,false,false,false];
+    if (gameRunning || gameStarting) {
+        return;
+    }
 
-  $("result").style.display = "none";
-  $("startBtn").disabled = true;
+    gameStarting = true;
 
-  prepareDecks();
+    const startBtn = document.getElementById("startBtn");
+    startBtn.disabled = true;
+    startBtn.textContent = "BALAPAN DIMULAI...";
 
-  for(let i=0;i<4;i++) {
-    $("done"+i).style.display = "none";
-    updateProgress(i);
-    $("number"+i).textContent = "BERSIAP...";
-    $("question"+i).textContent = "Balapan segera dimulai!";
-    $("answers"+i).innerHTML = "";
-    $("feedback"+i).textContent = "";
-  }
+    groupsState = GROUPS.map((_, index) =>
+        createGroupState(index)
+    );
 
-  let count = 3;
-  $("loadStatus").textContent = "Balapan dimulai dalam " + count + "...";
+    gameFinished = false;
 
-  const timer = setInterval(() => {
-    count--;
-    if(count > 0) {
-      $("loadStatus").textContent = "Balapan dimulai dalam " + count + "...";
+    document.getElementById("resultPanel").style.display = "none";
+    document.getElementById("groupsContainer").style.display = "grid";
+
+    resetDisplay();
+
+    let count = 3;
+    setStatus("Balapan dimulai dalam " + count + "...");
+
+    const countdown = setInterval(() => {
+        count--;
+
+        if (count > 0) {
+            setStatus("Balapan dimulai dalam " + count + "...");
+            return;
+        }
+
+        clearInterval(countdown);
+
+        gameStarting = false;
+        gameRunning = true;
+
+        startBtn.disabled = true;
+        startBtn.textContent = "🏁 BALAPAN BERLANGSUNG";
+
+        setStatus(
+            "Balapan berlangsung! Semua kelompok bisa menjawab secara bersamaan.",
+            "success"
+        );
+
+        groupsState.forEach((state, index) => {
+            showQuestion(index);
+        });
+    }, 1000);
+}
+
+function resetDisplay() {
+    groupsState.forEach((state, index) => {
+        const id = index + 1;
+
+        document.getElementById("score" + id).textContent = "0";
+        document.getElementById("progressText" + id).textContent = "Soal 1";
+        document.getElementById("answered" + id).textContent =
+            "0 / " + TOTAL_QUESTIONS;
+        document.getElementById("progressFill" + id).style.width = "0%";
+        document.getElementById("questionNumber" + id).textContent =
+            "Bersiap...";
+        document.getElementById("question" + id).textContent =
+            "Menyiapkan soal...";
+        document.getElementById("answers" + id).innerHTML = "";
+        document.getElementById("feedback" + id).textContent = "";
+        document.getElementById("feedback" + id).className = "feedback";
+
+        document.getElementById("robot" + id).style.left = "0%";
+        document.getElementById("raceScore" + id).textContent =
+            "0 / " + TOTAL_QUESTIONS + " benar";
+        document.getElementById("racePercent" + id).textContent = "0%";
+    });
+}
+
+function showQuestion(index) {
+    const state = groupsState[index];
+    const id = index + 1;
+
+    if (!state || state.finished) {
+        return;
+    }
+
+    if (state.answered >= TOTAL_QUESTIONS) {
+        finishGroup(index);
+        return;
+    }
+
+    state.locked = false;
+    state.currentQuestion = state.deck[state.answered];
+
+    const question = state.currentQuestion;
+    const answers = shuffle([
+        { text: question.a, correct: true },
+        { text: question.w[0], correct: false },
+        { text: question.w[1], correct: false }
+    ]);
+
+    document.getElementById("questionNumber" + id).textContent =
+        "SOAL " + (state.answered + 1) + " DARI " + TOTAL_QUESTIONS;
+
+    document.getElementById("question" + id).textContent = question.q;
+
+    const answersBox = document.getElementById("answers" + id);
+    answersBox.innerHTML = "";
+
+    answers.forEach((answer, answerIndex) => {
+        const button = document.createElement("button");
+
+        button.type = "button";
+        button.className = "answer-btn";
+        button.textContent =
+            String.fromCharCode(65 + answerIndex) + ". " + answer.text;
+
+        button.addEventListener("click", () => {
+            answerQuestion(index, answer, button);
+        });
+
+        answersBox.appendChild(button);
+    });
+
+    const feedback = document.getElementById("feedback" + id);
+    feedback.textContent = "Pilih jawaban yang paling tepat!";
+    feedback.className = "feedback neutral";
+
+    updateGroupDisplay(index);
+}
+
+function answerQuestion(index, answer, selectedButton) {
+    const state = groupsState[index];
+
+    if (
+        !gameRunning ||
+        !state ||
+        state.locked ||
+        state.finished
+    ) {
+        return;
+    }
+
+    state.locked = true;
+
+    const id = index + 1;
+    const answerButtons = document.querySelectorAll(
+        "#answers" + id + " .answer-btn"
+    );
+
+    answerButtons.forEach(button => {
+        button.disabled = true;
+    });
+
+    const feedback = document.getElementById("feedback" + id);
+
+    if (answer.correct) {
+        state.score += POINTS_PER_CORRECT;
+        state.correct++;
+
+        selectedButton.classList.add("correct");
+
+        feedback.textContent = "✅ BENAR! +10 poin. Robot maju!";
+        feedback.className = "feedback good";
+
     } else {
-      clearInterval(timer);
-      gameRunning = true;
-      $("loadStatus").textContent =
-        "Balapan berlangsung! Setiap kelompok menjawab di kolom masing-masing.";
+        selectedButton.classList.add("wrong");
 
-      for(let i=0;i<4;i++) showQuestion(i);
-    }
-  },1000);
-}
+        const correctButton = Array.from(answerButtons).find(button =>
+            button.textContent.endsWith(
+                ". " + state.currentQuestion.a
+            )
+        );
 
-function finishGame() {
-  gameRunning = false;
-  $("startBtn").disabled = false;
+        if (correctButton) {
+            correctButton.classList.add("correct");
+        }
 
-  const ranking = scores
-    .map((score,i) => ({score,i}))
-    .sort((a,b) => b.score-a.score);
+        feedback.textContent =
+            "❌ Belum tepat. Jawaban benar: " +
+            state.currentQuestion.a;
 
-  const highest = ranking[0].score;
-  const winners = ranking.filter(r => r.score === highest);
-
-  $("winnerText").textContent = winners.length > 1
-    ? "Hasil seri! Selamat kepada semua kelompok dengan skor tertinggi."
-    : groupInfo[winners[0].i].name + " menjadi juara dengan " + highest + " poin!";
-
-  $("ranking").innerHTML = ranking.map((r,index) =>
-    `<li>${index+1}. ${groupInfo[r.i].name} — ${r.score} poin</li>`
-  ).join("");
-
-  $("result").style.display = "block";
-  $("result").scrollIntoView({behavior:"smooth",block:"nearest"});
-  $("loadStatus").textContent = "Semua kelompok telah menyelesaikan 50 soal.";
-}
-
-async function loadSpreadsheet() {
-  const sheetId = $("sheetId").value.trim();
-
-  if(!sheetId) {
-    $("loadStatus").textContent = "Masukkan ID Google Spreadsheet terlebih dahulu.";
-    return;
-  }
-
-  $("loadBtn").disabled = true;
-  $("loadStatus").textContent = "Sedang memuat soal...";
-
-  try {
-    const url =
-      "https://docs.google.com/spreadsheets/d/" +
-      encodeURIComponent(sheetId) +
-      "/gviz/tq?tqx=out:json";
-
-    const response = await fetch(url);
-    if(!response.ok) throw new Error("Spreadsheet tidak dapat diakses.");
-
-    const raw = await response.text();
-    const start = raw.indexOf("{");
-    const end = raw.lastIndexOf("}");
-
-    if(start < 0 || end < 0) {
-      throw new Error("Format data spreadsheet tidak dikenali.");
+        feedback.className = "feedback bad";
     }
 
-    const data = JSON.parse(raw.slice(start,end+1));
-    const rows = data.table?.rows || [];
+    state.answered++;
 
-    const parsed = rows.map(row => {
-      const cells = (row.c || []).map(cell =>
-        cell && cell.v != null ? String(cell.v).trim() : ""
-      );
+    updateGroupDisplay(index);
+    updateRace(index);
 
-      return {
-        q:cells[0] || "",
-        correct:cells[1] || "",
-        wrong1:cells[2] || "",
-        wrong2:cells[3] || ""
-      };
-    }).filter(q => q.q && q.correct && q.wrong1 && q.wrong2)
-      .map(q => ({
-        q:q.q,
-        correct:q.correct,
-        wrong:[q.wrong1,q.wrong2]
-      }));
+    // Beri waktu melihat hasil sebelum soal berikutnya.
+    setTimeout(() => {
+        if (!gameRunning || state.finished) {
+            return;
+        }
 
-    if(parsed.length < 4) {
-      throw new Error("Minimal 4 soal valid harus tersedia. Periksa kolom A-D.");
-    }
-
-    questions = parsed;
-    $("loadStatus").textContent =
-      "✅ Berhasil memuat " + questions.length +
-      " soal. Setiap kelompok akan mendapat 50 soal secara acak.";
-
-  } catch(error) {
-    $("loadStatus").textContent =
-      "⚠️ Gagal memuat soal: " + error.message +
-      " Pastikan akses spreadsheet diatur ke Siapa saja yang memiliki link (Pelihat).";
-  } finally {
-    $("loadBtn").disabled = false;
-  }
+        if (state.answered >= TOTAL_QUESTIONS) {
+            finishGroup(index);
+        } else {
+            showQuestion(index);
+        }
+    }, 900);
 }
 
-$("loadBtn").addEventListener("click",loadSpreadsheet);
+function updateGroupDisplay(index) {
+    const state = groupsState[index];
+    const id = index + 1;
 
-$("startBtn").addEventListener("click",() => {
-  if(gameRunning) return;
-  startGame();
-});
+    document.getElementById("score" + id).textContent = state.score;
+    document.getElementById("answered" + id).textContent =
+        state.answered + " / " + TOTAL_QUESTIONS;
 
-$("fullBtn").addEventListener("click",async () => {
-  try {
-    if(!document.fullscreenElement) {
-      await document.documentElement.requestFullscreen();
+    document.getElementById("progressText" + id).textContent =
+        state.finished ? "Selesai" : "Progres soal";
+
+    const progress =
+        (state.answered / TOTAL_QUESTIONS) * 100;
+
+    document.getElementById("progressFill" + id).style.width =
+        progress + "%";
+}
+
+function updateRace(index) {
+    const state = groupsState[index];
+    const id = index + 1;
+
+    // Jarak robot berdasarkan jumlah jawaban benar.
+    // Robot mencapai garis finis jika menjawab 50 soal benar.
+    const progress = Math.min(
+        100,
+        (state.correct / TOTAL_QUESTIONS) * 100
+    );
+
+    // Sisakan sedikit ruang agar robot tidak menutupi bendera.
+    const position = Math.min(90, progress * 0.9);
+
+    document.getElementById("robot" + id).style.left =
+        position + "%";
+
+    document.getElementById("raceScore" + id).textContent =
+        state.correct + " / " + TOTAL_QUESTIONS + " benar";
+
+    document.getElementById("racePercent" + id).textContent =
+        Math.round(progress) + "%";
+}
+
+function finishGroup(index) {
+    const state = groupsState[index];
+    const id = index + 1;
+
+    if (state.finished) {
+        return;
+    }
+
+    state.finished = true;
+    state.locked = true;
+
+    document.getElementById("questionNumber" + id).textContent =
+        "BALAPAN KELOMPOK SELESAI";
+
+    document.getElementById("question" + id).textContent = "";
+
+    document.getElementById("answers" + id).innerHTML =
+        '<div class="group-finished">' +
+        '🏁 SELESAI!<br>' +
+        'Jawaban benar: ' + state.correct + '<br>' +
+        'Skor akhir: ' + state.score + ' poin' +
+        '</div>';
+
+    document.getElementById("feedback" + id).textContent =
+        "Tunggu kelompok lain menyelesaikan soal.";
+
+    document.getElementById("feedback" + id).className =
+        "feedback neutral";
+
+    updateGroupDisplay(index);
+    updateRace(index);
+
+    if (groupsState.every(group => group.finished)) {
+        endGame();
+    }
+}
+
+function endGame() {
+    gameRunning = false;
+    gameStarting = false;
+    gameFinished = true;
+
+    const ranking = [...groupsState].sort((a, b) =>
+        b.score - a.score ||
+        b.correct - a.correct ||
+        a.answered - b.answered ||
+        a.index - b.index
+    );
+
+    const highestScore = ranking[0].score;
+    const winners = ranking.filter(group =>
+        group.score === highestScore
+    );
+
+    const winnerText = document.getElementById("winnerText");
+
+    if (winners.length === 1) {
+        winnerText.textContent =
+            "🎉 Selamat kepada " +
+            GROUPS[winners[0].index].name +
+            " sebagai juara dengan " +
+            winners[0].score + " poin!";
     } else {
-      await document.exitFullscreen();
+        winnerText.textContent =
+            "🤝 Hasil seri! " +
+            winners.map(group => GROUPS[group.index].name).join(", ") +
+            " sama-sama memperoleh " + highestScore + " poin.";
     }
-  } catch(error) {
-    $("loadStatus").textContent =
-      "Browser ini tidak mendukung layar penuh.";
-  }
-});
 
-buildGroups();
-for(let i=0;i<4;i++) updateProgress(i);
+    const resultList = document.getElementById("resultList");
+    resultList.innerHTML = "";
+
+    ranking.forEach((group, rank) => {
+        const li = document.createElement("li");
+
+        const medal = ["🥇", "🥈", "🥉", "4️⃣"][rank];
+
+        li.innerHTML =
+            "<span>" + medal + " " +
+            escapeHTML(GROUPS[group.index].name) +
+            "</span><span>" + group.score +
+            " poin (" + group.correct + " benar)</span>";
+
+        resultList.appendChild(li);
+    });
+
+    document.getElementById("resultPanel").style.display = "block";
+    document.getElementById("startBtn").disabled = false;
+    document.getElementById("startBtn").textContent = "🔄 MAIN LAGI";
+
+    setStatus("Semua kelompok telah menyelesaikan 50 soal!", "success");
+
+    document.getElementById("resultPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "center"
+    });
+}
+
+function restartGame() {
+    if (gameRunning || gameStarting) {
+        return;
+    }
+
+    gameFinished = false;
+    groupsState = [];
+    resetDisplay();
+
+    document.getElementById("resultPanel").style.display = "none";
+
+    const startBtn = document.getElementById("startBtn");
+    startBtn.disabled = false;
+    startBtn.textContent = "🚀 MULAI BALAPAN!";
+
+    setStatus(
+        "Siap bermain lagi. Soal akan diacak kembali.",
+        "success"
+    );
+
+    document.getElementById("groupsContainer").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+async function toggleFullscreen() {
+    try {
+        if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+        } else {
+            await document.exitFullscreen();
+        }
+    } catch (error) {
+        setStatus(
+            "Mode layar penuh tidak didukung atau diblokir browser.",
+            "error"
+        );
+    }
+}
+
+updateBankCount();
 </script>
+
 </body>
 </html>
