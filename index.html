@@ -630,43 +630,47 @@
       });
     }
 
-    function submitAnswer(selected, selectedButton) {
-      if (!gameRunning || questionAnswered) return;
+    
+function submitAnswer(selected, selectedButton) {
+  if (!gameRunning || questionAnswered) return;
 
-      questionAnswered = true;
-      const question = questionOrder[currentQuestion];
-      const buttons = [...$("answers").querySelectorAll("button")];
+  questionAnswered = true;
 
-      buttons.forEach(button => button.disabled = true);
+  const question = questionOrder[currentQuestion];
+  const buttons = [...$("answers").querySelectorAll("button")];
 
-      if (selected === question.correct) {
-        scores[0] += 10;
-        selectedButton.classList.add("correct");
-        $("feedback").textContent = "✅ Benar! Robot kamu maju 10 poin.";
-        $("feedback").style.color = "#4ade80";
-      } else {
-        selectedButton.classList.add("wrong");
-        buttons[question.correct]?.classList.add("correct");
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
 
-        // Robot lawan yang tercepat mendapat poin jika pemain salah.
-        const opponent = 1 + Math.floor(Math.random() * 3);
-        scores[opponent] += 10;
-        $("feedback").textContent =
-          `❌ Belum tepat. ${robotNames[opponent]} mendapat 10 poin.`;
-        $("feedback").style.color = "#fb7185";
-      }
+  if (selected === question.correct) {
+    scores[0] += 10;
+    selectedButton.classList.add("correct");
 
-      renderScores();
-      updateRobots();
-      currentQuestion++;
+    $("feedback").textContent =
+      "✅ Benar! Robot kamu maju 10 poin.";
+    $("feedback").style.color = "#4ade80";
+  } else {
+    selectedButton.classList.add("wrong");
+    buttons[question.correct]?.classList.add("correct");
 
-      $("raceProgress").textContent =
-        `Soal ${Math.min(currentQuestion, questionOrder.length)} / ${questionOrder.length}`;
+    $("feedback").textContent =
+      "❌ Jawaban salah! Robot kamu tidak bergerak.";
+    $("feedback").style.color = "#fb7185";
+  }
 
-      setTimeout(() => {
-        if (gameRunning) setQuestion();
-      }, 1100);
-    }
+  renderScores();
+  updateRobots();
+
+  currentQuestion++;
+
+  $("raceProgress").textContent =
+    `Soal ${Math.min(currentQuestion, questionOrder.length)} / ${questionOrder.length}`;
+
+  setTimeout(() => {
+    if (gameRunning) setQuestion();
+  }, 1100);
+}
 
     function startGame() {
       playerName = $("playerName").value.trim() || "Pemain";
