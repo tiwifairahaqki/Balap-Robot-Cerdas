@@ -1,383 +1,1305 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Balap Robot Cerdas - Kuis Bergiliran</title>
+
 <style>
-:root{--bg:#f1f5f9;--navy:#172554;--blue:#0284c7;--red:#e11d48;--yellow:#ca8a04;--green:#16a34a}
+:root{
+  --bg:#f1f5f9;
+  --navy:#172554;
+  --blue:#0284c7;
+  --red:#e11d48;
+  --yellow:#ca8a04;
+  --green:#16a34a;
+}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:#172033;font-family:Arial,Helvetica,sans-serif}
-button,input{font:inherit}button{cursor:pointer}
-header{background:linear-gradient(120deg,#10234a,#1d4ed8);color:#fff;text-align:center;padding:22px 15px}
-header h1{margin:0 0 8px;font-size:clamp(22px,3vw,34px)}header p{margin:0;color:#dbeafe;font-size:14px}
-.toolbar{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:10px;padding:14px;background:#fff;border-bottom:1px solid #dbe3ef}
-.toolbar input{width:min(390px,90vw);padding:10px 14px;border:1px solid #cbd5e1;border-radius:9px}
-.btn{border:0;border-radius:9px;padding:10px 15px;font-weight:bold}
-.primary{background:#2563eb;color:#fff}.dark{background:#1e293b;color:#fff}.green{background:#15803d;color:#fff}
+body{
+  margin:0;
+  background:var(--bg);
+  color:#172033;
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+header{
+  background:linear-gradient(120deg,#10234a,#1d4ed8);
+  color:white;
+  text-align:center;
+  padding:22px 15px;
+}
+header h1{margin:0 0 8px;font-size:clamp(22px,3vw,34px)}
+header p{margin:0;color:#dbeafe;font-size:14px}
+.toolbar{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:10px;
+  padding:14px;
+  background:white;
+  border-bottom:1px solid #dbe3ef;
+}
+.toolbar input{
+  width:min(390px,90vw);
+  padding:10px 14px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+}
+.btn{
+  border:0;
+  border-radius:9px;
+  padding:10px 15px;
+  font-weight:bold;
+}
+.primary{background:#2563eb;color:white}
+.dark{background:#1e293b;color:white}
+.green{background:#15803d;color:white}
 button:disabled{opacity:.5;cursor:not-allowed}
-.status{text-align:center;padding:10px 12px;font-size:13px;background:#e0f2fe;color:#075985}
-.status.error{background:#fee2e2;color:#991b1b}.status.success{background:#dcfce7;color:#166534}
-.wrap{width:min(1500px,calc(100% - 28px));margin:18px auto}
-.setup,.panel,.result,.history{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:20px;box-shadow:0 4px 12px #0f172a0b}
-.setup h2,.panel h2,.history h2{margin:0 0 12px}
-.players{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
-.player-input{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#64748b;font-weight:bold}
-.player-input input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;color:#172033;font-size:14px}
-.setup-actions{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:16px}
-.info{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:16px auto}
-.info-card{background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:12px 18px;text-align:center;min-width:125px}
-.info-card strong{display:block;color:#1d4ed8;font-size:22px;margin-bottom:4px}.info-card span{color:#64748b;font-size:12px}
-.race{padding:20px;color:#fff;border-radius:18px;background:linear-gradient(135deg,#111827,#263b60);box-shadow:0 7px 20px #0f172a20}
-.race h2{text-align:center;margin:0 0 5px}.race-sub{text-align:center;color:#cbd5e1;font-size:13px;margin:0 0 20px}
-.lanes{display:flex;flex-direction:column;gap:12px}.lane{display:grid;grid-template-columns:170px minmax(0,1fr);gap:12px;align-items:center}
-.lane-name{font-size:13px;font-weight:bold;line-height:1.5}.lane-name small{display:block;color:#cbd5e1;font-weight:normal}
-.lane-name.blue{color:#7dd3fc}.lane-name.red{color:#fda4af}.lane-name.yellow{color:#fde047}.lane-name.green{color:#86efac}
-.track{position:relative;height:48px;overflow:hidden;border:2px solid #f8fafc;border-radius:8px;background:repeating-linear-gradient(90deg,#dbe4ee 0,#dbe4ee 34px,#cbd5e1 34px,#cbd5e1 68px)}
-.track:after{content:"";position:absolute;top:0;bottom:0;right:38px;border-left:2px dashed #64748b}
-.robot{position:absolute;top:4px;left:0%;font-size:29px;line-height:34px;transition:left .65s ease;z-index:2}
-.finish{position:absolute;right:1px;top:5px;font-size:29px;z-index:1}.race-score{position:absolute;right:43px;top:15px;color:#111827;font-size:11px;font-weight:bold;z-index:3}
-.turn-banner{text-align:center;margin:16px 0;padding:13px;border-radius:12px;background:#dbeafe;color:#1e40af;font-weight:bold}
-.game{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:14px;align-items:start}
-.question-card{background:#fff;border:2px solid #2563eb;border-radius:16px;padding:22px;min-height:330px}
-.question-top{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#64748b;font-size:13px}
-.question{font-size:clamp(18px,2.2vw,25px);font-weight:bold;line-height:1.5;margin:24px 0}
-.answers{display:grid;gap:10px}.answer{width:100%;text-align:left;padding:14px;border:1px solid #cbd5e1;background:#f8fafc;border-radius:10px;color:#1e293b;line-height:1.4}
-.answer:hover:not(:disabled){background:#dbeafe;border-color:#60a5fa}.answer:disabled{cursor:default;opacity:1}
-.answer.correct{background:#dcfce7;border-color:#22c55e;color:#166534}.answer.wrong{background:#fee2e2;border-color:#ef4444;color:#991b1b}
-.feedback{min-height:28px;margin-top:14px;font-weight:bold;font-size:14px}.good{color:#15803d}.bad{color:#dc2626}
-.side{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:16px}
-.side h3{margin:0 0 12px}.side-row{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #e2e8f0;font-size:13px}
-.side-row:last-child{border:0}.muted{color:#64748b}
-.progress{height:9px;border-radius:20px;background:#e2e8f0;overflow:hidden;margin:10px 0}.progress div{height:100%;background:#2563eb;width:0%;transition:width .3s}
+.status{
+  text-align:center;
+  padding:10px 12px;
+  font-size:13px;
+  background:#e0f2fe;
+  color:#075985;
+}
+.status.error{background:#fee2e2;color:#991b1b}
+.status.success{background:#dcfce7;color:#166534}
+.wrap{
+  width:min(1500px,calc(100% - 28px));
+  margin:18px auto;
+}
+.setup,.result,.history{
+  background:white;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:20px;
+  box-shadow:0 4px 12px #0f172a0b;
+}
+.setup h2,.history h2{margin:0 0 12px}
+.players{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+}
+.player-input{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  font-size:12px;
+  color:#64748b;
+  font-weight:bold;
+}
+.player-input input{
+  width:100%;
+  padding:11px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  color:#172033;
+  font-size:14px;
+}
+.player-count{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+  max-width:250px;
+  margin-bottom:15px;
+  font-size:13px;
+  font-weight:bold;
+  color:#475569;
+}
+.player-count select{
+  padding:11px;
+  border:1px solid #cbd5e1;
+  border-radius:9px;
+  background:white;
+}
+.setup-actions{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:16px;
+}
+.info{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:16px auto;
+}
+.info-card{
+  background:white;
+  border:1px solid #e2e8f0;
+  border-radius:12px;
+  padding:12px 18px;
+  text-align:center;
+  min-width:125px;
+}
+.info-card strong{
+  display:block;
+  color:#1d4ed8;
+  font-size:22px;
+  margin-bottom:4px;
+}
+.info-card span{color:#64748b;font-size:12px}
+.race{
+  padding:20px;
+  color:white;
+  border-radius:18px;
+  background:linear-gradient(135deg,#111827,#263b60);
+  box-shadow:0 7px 20px #0f172a20;
+}
+.race h2{text-align:center;margin:0 0 5px}
+.race-sub{
+  text-align:center;
+  color:#cbd5e1;
+  font-size:13px;
+  margin:0 0 20px;
+}
+.lanes{display:flex;flex-direction:column;gap:12px}
+.lane{
+  display:grid;
+  grid-template-columns:170px minmax(0,1fr);
+  gap:12px;
+  align-items:center;
+}
+.lane-name{
+  font-size:13px;
+  font-weight:bold;
+  line-height:1.5;
+}
+.lane-name small{
+  display:block;
+  color:#cbd5e1;
+  font-weight:normal;
+}
+.lane-name.blue{color:#7dd3fc}
+.lane-name.red{color:#fda4af}
+.lane-name.yellow{color:#fde047}
+.lane-name.green{color:#86efac}
+.track{
+  position:relative;
+  height:48px;
+  overflow:hidden;
+  border:2px solid #f8fafc;
+  border-radius:8px;
+  background:repeating-linear-gradient(
+    90deg,#dbe4ee 0,#dbe4ee 34px,
+    #cbd5e1 34px,#cbd5e1 68px
+  );
+}
+.robot{
+  position:absolute;
+  top:4px;
+  left:0%;
+  font-size:29px;
+  line-height:34px;
+  transition:left .65s ease;
+  z-index:2;
+}
+.finish{
+  position:absolute;
+  right:1px;
+  top:5px;
+  font-size:29px;
+  z-index:1;
+}
+.race-score{
+  position:absolute;
+  right:43px;
+  top:15px;
+  color:#111827;
+  font-size:11px;
+  font-weight:bold;
+  z-index:3;
+}
+.turn-banner{
+  text-align:center;
+  margin:16px 0;
+  padding:13px;
+  border-radius:12px;
+  background:#dbeafe;
+  color:#1e40af;
+  font-weight:bold;
+}
+.game{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 280px;
+  gap:14px;
+  align-items:start;
+}
+.question-card{
+  background:white;
+  border:2px solid #2563eb;
+  border-radius:16px;
+  padding:22px;
+  min-height:330px;
+}
+.question-top{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  flex-wrap:wrap;
+  color:#64748b;
+  font-size:13px;
+}
+.question{
+  font-size:clamp(18px,2.2vw,25px);
+  font-weight:bold;
+  line-height:1.5;
+  margin:24px 0;
+}
+.answers{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+.answer{
+  width:100%;
+  min-height:60px;
+  text-align:left;
+  padding:14px;
+  border:1px solid #cbd5e1;
+  background:#f8fafc;
+  border-radius:10px;
+  color:#1e293b;
+  line-height:1.4;
+}
+.answer:hover:not(:disabled){
+  background:#dbeafe;
+  border-color:#60a5fa;
+}
+.answer:disabled{cursor:default;opacity:1}
+.answer.correct{
+  background:#dcfce7;
+  border-color:#22c55e;
+  color:#166534;
+}
+.answer.wrong{
+  background:#fee2e2;
+  border-color:#ef4444;
+  color:#991b1b;
+}
+.feedback{
+  min-height:28px;
+  margin-top:14px;
+  font-weight:bold;
+  font-size:14px;
+}
+.good{color:#15803d}
+.bad{color:#dc2626}
+.side{
+  background:white;
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:16px;
+}
+.side h3{margin:0 0 12px}
+.side-row{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  padding:9px 0;
+  border-bottom:1px solid #e2e8f0;
+  font-size:13px;
+}
+.side-row:last-child{border:0}
+.side-row.active{
+  color:#1d4ed8;
+  font-weight:bold;
+}
+.muted{color:#64748b}
+.progress{
+  height:9px;
+  border-radius:20px;
+  background:#e2e8f0;
+  overflow:hidden;
+  margin:10px 0;
+}
+.progress div{
+  height:100%;
+  background:#2563eb;
+  width:0%;
+  transition:width .3s;
+}
 .hidden{display:none!important}
-.result{margin:18px auto;text-align:center;border:2px solid #facc15}.result h2{color:#92400e;margin-top:0}
-.result-list{list-style:none;padding:0;margin:15px auto;max-width:650px}.result-list li{display:flex;justify-content:space-between;gap:10px;padding:13px;margin:7px 0;background:#f8fafc;border-radius:9px;font-weight:bold}
-.history{margin:18px auto}.history table{width:100%;border-collapse:collapse;font-size:13px}.history th,.history td{text-align:left;padding:10px;border-bottom:1px solid #e2e8f0}.history th{background:#f8fafc}
-.history-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-footer{text-align:center;padding:22px 12px;background:#111827;color:#e2e8f0;font-size:13px;margin-top:30px}
-@media(max-width:850px){.players{grid-template-columns:repeat(2,minmax(0,1fr))}.game{grid-template-columns:1fr}.side{order:2}}
-@media(max-width:550px){.wrap{width:calc(100% - 16px)}.players{grid-template-columns:1fr 1fr}.setup,.panel,.result,.history{padding:14px}.lane{grid-template-columns:105px minmax(0,1fr);gap:7px}.lane-name{font-size:10px}.track{height:42px}.robot{font-size:25px;top:2px}.finish{font-size:25px;top:3px}.race{padding:14px 10px}.result-list li{font-size:12px}}
+.result{
+  margin:18px auto;
+  text-align:center;
+  border:2px solid #facc15;
+}
+.result h2{color:#92400e;margin-top:0}
+.result-list{
+  list-style:none;
+  padding:0;
+  margin:15px auto;
+  max-width:650px;
+}
+.result-list li{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:13px;
+  margin:7px 0;
+  background:#f8fafc;
+  border-radius:9px;
+  font-weight:bold;
+}
+.history{margin:18px auto}
+.history table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+.history th,.history td{
+  text-align:left;
+  padding:10px;
+  border-bottom:1px solid #e2e8f0;
+}
+.history th{background:#f8fafc}
+.history-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+footer{
+  text-align:center;
+  padding:22px 12px;
+  background:#111827;
+  color:#e2e8f0;
+  font-size:13px;
+  margin-top:30px;
+}
+@media(max-width:850px){
+  .players{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .game{grid-template-columns:1fr}
+  .side{order:2}
+}
+@media(max-width:550px){
+  .wrap{width:calc(100% - 16px)}
+  .players{grid-template-columns:1fr 1fr}
+  .setup,.result,.history{padding:14px}
+  .lane{grid-template-columns:105px minmax(0,1fr);gap:7px}
+  .lane-name{font-size:10px}
+  .track{height:42px}
+  .robot{font-size:25px;top:2px}
+  .finish{font-size:25px;top:3px}
+  .race{padding:14px 10px}
+  .result-list li{font-size:12px}
+  .question-card{padding:15px}
+  .answers{grid-template-columns:1fr}
+}
 </style>
 </head>
+
 <body>
+
 <header>
   <h1>🏁 BALAP ROBOT CERDAS 🤖</h1>
-  <p>Empat pemain bergiliran menjawab 10 soal untuk menjadi juara!</p>
+  <p>Kuis bergiliran untuk 2–4 pemain. Jawab soal dan jadilah juara!</p>
 </header>
 
 <div class="toolbar">
-  <input id="sheetId" type="text" value="1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU" placeholder="Masukkan ID Google Spreadsheet" aria-label="ID Google Spreadsheet">
-  <button class="btn primary" id="loadSheetBtn">📚 Muat Soal Spreadsheet</button>
-  <button class="btn dark" id="fullscreenBtn">⛶ Layar Penuh</button>
+  <input
+    id="sheetId"
+    type="text"
+    value="1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU"
+    placeholder="Masukkan ID Google Spreadsheet"
+    aria-label="ID Google Spreadsheet"
+  >
+  <button class="btn primary" id="loadSheetBtn">
+    📚 Muat Soal Spreadsheet
+  </button>
+  <button class="btn dark" id="fullscreenBtn">
+    ⛶ Layar Penuh
+  </button>
 </div>
-<div id="status" class="status">Game siap. Masukkan nama pemain, lalu mulai permainan.</div>
+
+<div id="status" class="status">
+  Game siap. Atur jumlah pemain dan nama pemain, lalu mulai permainan.
+</div>
 
 <main class="wrap">
-  <section class="setup">
-    <h2>👥 Daftar Pemain</h2>
-    <p class="muted">Ubah nama empat orang yang akan bermain pada sesi ini. Urutan bermain mengikuti nomor pemain.</p>
-    <div class="players">
-      <label class="player-input">PEMAIN 1<input id="name0" maxlength="30" value="Pemain 1"></label>
-      <label class="player-input">PEMAIN 2<input id="name1" maxlength="30" value="Pemain 2"></label>
-      <label class="player-input">PEMAIN 3<input id="name2" maxlength="30" value="Pemain 3"></label>
-      <label class="player-input">PEMAIN 4<input id="name3" maxlength="30" value="Pemain 4"></label>
+
+<section class="setup">
+  <h2>👥 Pengaturan Pemain</h2>
+  <p class="muted">
+    Tentukan jumlah pemain dan ubah nama setiap pemain sebelum memulai.
+  </p>
+
+  <label class="player-count">
+    JUMLAH PEMAIN
+    <select id="playerCount">
+      <option value="2">2 Pemain</option>
+      <option value="3">3 Pemain</option>
+      <option value="4" selected>4 Pemain</option>
+    </select>
+  </label>
+
+  <div class="players">
+    <label class="player-input" id="playerInput0">
+      PEMAIN 1
+      <input id="name0" maxlength="30" value="Pemain 1">
+    </label>
+
+    <label class="player-input" id="playerInput1">
+      PEMAIN 2
+      <input id="name1" maxlength="30" value="Pemain 2">
+    </label>
+
+    <label class="player-input" id="playerInput2">
+      PEMAIN 3
+      <input id="name2" maxlength="30" value="Pemain 3">
+    </label>
+
+    <label class="player-input" id="playerInput3">
+      PEMAIN 4
+      <input id="name3" maxlength="30" value="Pemain 4">
+    </label>
+  </div>
+
+  <div class="setup-actions">
+    <button class="btn green" id="startBtn">
+      🚀 MULAI PERMAINAN
+    </button>
+  </div>
+</section>
+
+<section class="info">
+  <div class="info-card">
+    <strong id="playerInfo">4</strong>
+    <span>Jumlah pemain</span>
+  </div>
+
+  <div class="info-card">
+    <strong id="questionInfo">10</strong>
+    <span>Soal per pemain</span>
+  </div>
+
+  <div class="info-card">
+    <strong>10</strong>
+    <span>Poin jawaban benar</span>
+  </div>
+
+  <div class="info-card">
+    <strong id="bankCount">20</strong>
+    <span>Soal tersedia</span>
+  </div>
+</section>
+
+<section class="race">
+  <h2>🏎️ ARENA BALAPAN ROBOT 🏁</h2>
+  <p class="race-sub">
+    Robot bergerak maju setiap pemain menjawab soal dengan benar.
+  </p>
+  <div class="lanes" id="lanes"></div>
+</section>
+
+<div id="turnBanner" class="turn-banner hidden">
+  Menunggu permainan dimulai.
+</div>
+
+<section id="gameArea" class="game hidden">
+
+  <div class="question-card">
+
+    <div class="question-top">
+      <span id="playerLabel">PEMAIN 1</span>
+      <span id="questionCount">SOAL 1 DARI 10</span>
     </div>
-    <div class="setup-actions">
-      <button class="btn green" id="startBtn">🚀 MULAI SESI</button>
+
+    <div class="progress">
+      <div id="questionProgress"></div>
     </div>
-  </section>
 
-  <section class="info">
-    <div class="info-card"><strong>4</strong><span>Pemain per sesi</span></div>
-    <div class="info-card"><strong>10</strong><span>Soal per pemain</span></div>
-    <div class="info-card"><strong>10</strong><span>Poin jawaban benar</span></div>
-    <div class="info-card"><strong id="bankCount">20</strong><span>Soal tersedia</span></div>
-  </section>
+    <p class="question" id="questionText">
+      Pertanyaan akan muncul di sini.
+    </p>
 
-  <section class="race">
-    <h2>🏎️ ARENA BALAPAN ROBOT 🏁</h2>
-    <p class="race-sub">Robot setiap pemain maju berdasarkan jumlah jawaban benar.</p>
-    <div class="lanes" id="lanes"></div>
-  </section>
+    <div class="answers" id="answerList"></div>
 
-  <div id="turnBanner" class="turn-banner hidden">Menunggu permainan dimulai.</div>
+    <div class="feedback" id="feedback"></div>
 
-  <section id="gameArea" class="game hidden">
-    <div class="question-card">
-      <div class="question-top"><span id="playerLabel">PEMAIN 1</span><span id="questionCount">SOAL 1 DARI 10</span></div>
-      <div class="progress"><div id="questionProgress"></div></div>
-      <p class="question" id="questionText">Pertanyaan akan muncul di sini.</p>
-      <div class="answers" id="answerList"></div>
-      <div class="feedback" id="feedback"></div>
-      <div class="setup-actions"><button class="btn primary hidden" id="nextPlayerBtn">Lanjut ke pemain berikutnya →</button></div>
-    </div>
-    <aside class="side">
-      <h3>📊 Skor Sesi</h3>
-      <div id="scoreBoard"></div>
-      <p class="muted" style="font-size:12px;line-height:1.5;margin-bottom:0">Setiap pemain menjawab 10 soal secara bergiliran. Pemain berikutnya menunggu sampai gilirannya dimulai.</p>
-    </aside>
-  </section>
+  </div>
 
-  <section id="resultPanel" class="result hidden">
-    <h2>🏆 HASIL AKHIR SESI 🏆</h2>
-    <p id="winnerText"></p>
-    <ol class="result-list" id="resultList"></ol>
-    <div class="setup-actions">
-      <button class="btn green" id="newSessionBtn">➕ Mulai sesi berikutnya</button>
-    </div>
-    <p class="muted" style="font-size:12px">Hasil sesi disimpan di browser/perangkat ini.</p>
-  </section>
+  <aside class="side">
+    <h3>📊 Skor Pemain</h3>
+    <div id="scoreBoard"></div>
 
-  <section class="history">
-    <h2>🗂️ Riwayat Hasil Sesi</h2>
-    <div id="historyContent" class="muted">Belum ada hasil sesi yang tersimpan.</div>
-    <div class="history-actions">
-      <button class="btn dark" id="exportBtn">⬇️ Ekspor riwayat CSV</button>
-      <button class="btn" id="clearHistoryBtn" style="background:#fee2e2;color:#991b1b">Hapus riwayat lokal</button>
-    </div>
-  </section>
+    <p class="muted" style="font-size:12px;line-height:1.5">
+      Setiap pemain menjawab satu soal secara bergiliran.
+      Setelah semua pemain mendapat giliran, permainan kembali ke pemain pertama.
+    </p>
+  </aside>
+
+</section>
+
+<section id="resultPanel" class="result hidden">
+  <h2>🏆 HASIL AKHIR PERMAINAN 🏆</h2>
+  <p id="winnerText"></p>
+  <ol class="result-list" id="resultList"></ol>
+
+  <div class="setup-actions">
+    <button class="btn green" id="newSessionBtn">
+      ➕ Mulai Permainan Baru
+    </button>
+  </div>
+
+  <p class="muted" style="font-size:12px">
+    Hasil permainan disimpan di browser/perangkat ini.
+  </p>
+</section>
+
+<section class="history">
+  <h2>🗂️ Riwayat Hasil Permainan</h2>
+
+  <div id="historyContent" class="muted">
+    Belum ada hasil permainan yang tersimpan.
+  </div>
+
+  <div class="history-actions">
+    <button class="btn dark" id="exportBtn">
+      ⬇️ Ekspor Riwayat CSV
+    </button>
+
+    <button
+      class="btn"
+      id="clearHistoryBtn"
+      style="background:#fee2e2;color:#991b1b"
+    >
+      Hapus Riwayat Lokal
+    </button>
+  </div>
+</section>
+
 </main>
 
-<footer>Balap Robot Cerdas • Kuis bergiliran untuk empat pemain</footer>
+<footer>
+  Balap Robot Cerdas • Kuis Bergiliran
+</footer>
 
 <script>
 "use strict";
+
 const QUESTIONS_PER_PLAYER = 10;
 const POINTS_PER_CORRECT = 10;
-const STORAGE_KEY = "balapRobotCerdas_sessions_v1";
+const STORAGE_KEY = "balapRobotCerdas_sessions_v2";
 
 const FALLBACK_QUESTIONS = [
- {q:"Apa ibu kota Indonesia?",a:"Jakarta",w:["Bandung","Surabaya"]},
- {q:"Berapa hasil 5 + 7?",a:"12",w:["10","13"]},
- {q:"Planet tempat manusia tinggal adalah?",a:"Bumi",w:["Mars","Venus"]},
- {q:"Hewan yang dikenal sebagai raja hutan adalah?",a:"Singa",w:["Kelinci","Kambing"]},
- {q:"Berapa jumlah hari dalam satu minggu?",a:"7 hari",w:["5 hari","10 hari"]},
- {q:"Warna bendera Indonesia adalah?",a:"Merah dan putih",w:["Biru dan putih","Hijau dan kuning"]},
- {q:"Alat untuk menulis di papan tulis adalah?",a:"Spidol",w:["Sendok","Sisir"]},
- {q:"Berapa hasil 10 × 3?",a:"30",w:["13","20"]},
- {q:"Matahari terbit dari arah?",a:"Timur",w:["Barat","Utara"]},
- {q:"Hewan yang hidup di air dan bernapas dengan insang adalah?",a:"Ikan",w:["Kucing","Ayam"]},
- {q:"Berapa jumlah bulan dalam satu tahun?",a:"12 bulan",w:["10 bulan","14 bulan"]},
- {q:"Alat untuk melihat benda yang sangat kecil adalah?",a:"Mikroskop",w:["Teleskop","Termometer"]},
- {q:"Apa nama satelit alami Bumi?",a:"Bulan",w:["Matahari","Mars"]},
- {q:"Berapa hasil 20 - 8?",a:"12",w:["10","14"]},
- {q:"Bahasa nasional Indonesia adalah?",a:"Bahasa Indonesia",w:["Bahasa Jepang","Bahasa Korea"]},
- {q:"Organ tubuh yang digunakan untuk melihat adalah?",a:"Mata",w:["Telinga","Hidung"]},
- {q:"Air membeku menjadi?",a:"Es",w:["Uap","Pasir"]},
- {q:"Berapa hasil 4 × 4?",a:"16",w:["8","12"]},
- {q:"Hewan yang menghasilkan madu adalah?",a:"Lebah",w:["Semut","Kupu-kupu"]},
- {q:"Alat untuk mengukur suhu adalah?",a:"Termometer",w:["Penggaris","Kompas"]}
+  {q:"Apa ibu kota Indonesia?",a:"Jakarta",w:["Bandung","Surabaya","Medan"]},
+  {q:"Berapa hasil 5 + 7?",a:"12",w:["10","13","14"]},
+  {q:"Planet tempat manusia tinggal adalah?",a:"Bumi",w:["Mars","Venus","Jupiter"]},
+  {q:"Hewan yang dikenal sebagai raja hutan adalah?",a:"Singa",w:["Kelinci","Kambing","Kucing"]},
+  {q:"Berapa jumlah hari dalam satu minggu?",a:"7 hari",w:["5 hari","10 hari","8 hari"]},
+  {q:"Warna bendera Indonesia adalah?",a:"Merah dan putih",w:["Biru dan putih","Hijau dan kuning","Merah dan biru"]},
+  {q:"Alat untuk menulis di papan tulis adalah?",a:"Spidol",w:["Sendok","Sisir","Piring"]},
+  {q:"Berapa hasil 10 × 3?",a:"30",w:["13","20","40"]},
+  {q:"Matahari terbit dari arah?",a:"Timur",w:["Barat","Utara","Selatan"]},
+  {q:"Hewan yang hidup di air dan bernapas dengan insang adalah?",a:"Ikan",w:["Kucing","Ayam","Kambing"]},
+  {q:"Berapa jumlah bulan dalam satu tahun?",a:"12 bulan",w:["10 bulan","14 bulan","11 bulan"]},
+  {q:"Alat untuk melihat benda yang sangat kecil adalah?",a:"Mikroskop",w:["Teleskop","Termometer","Kompas"]},
+  {q:"Apa nama satelit alami Bumi?",a:"Bulan",w:["Matahari","Mars","Venus"]},
+  {q:"Berapa hasil 20 - 8?",a:"12",w:["10","14","16"]},
+  {q:"Bahasa nasional Indonesia adalah?",a:"Bahasa Indonesia",w:["Bahasa Jepang","Bahasa Korea","Bahasa Inggris"]},
+  {q:"Organ tubuh yang digunakan untuk melihat adalah?",a:"Mata",w:["Telinga","Hidung","Mulut"]},
+  {q:"Air membeku menjadi?",a:"Es",w:["Uap","Pasir","Minyak"]},
+  {q:"Berapa hasil 4 × 4?",a:"16",w:["8","12","20"]},
+  {q:"Hewan yang menghasilkan madu adalah?",a:"Lebah",w:["Semut","Kupu-kupu","Nyamuk"]},
+  {q:"Alat untuk mengukur suhu adalah?",a:"Termometer",w:["Penggaris","Kompas","Timbangan"]}
 ];
 
 let questionBank = [...FALLBACK_QUESTIONS];
 let players = [];
 let currentPlayerIndex = 0;
-let questionIndex = 0;
-let activeQuestion = null;
 let gameActive = false;
-let waitingForNextPlayer = false;
+let answerLocked = false;
+let turnTimer = null;
 
 const $ = id => document.getElementById(id);
-function setStatus(message,type=""){ $("status").textContent=message; $("status").className="status"+(type?" "+type:""); }
-function shuffle(array){const a=[...array];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function escapeHTML(value){return String(value).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function getHistory(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");return Array.isArray(x)?x:[];}catch(e){return [];}}
-function saveHistory(data){const h=getHistory();h.push(data);localStorage.setItem(STORAGE_KEY,JSON.stringify(h));renderHistory();}
-function renderLanes(){
-  $("lanes").innerHTML="";
-  const colors=["blue","red","yellow","green"];
+
+function setStatus(message,type=""){
+  $("status").textContent = message;
+  $("status").className = "status" + (type ? " " + type : "");
+}
+
+function shuffle(array){
+  const a = [...array];
+
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+
+  return a;
+}
+
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+function getHistory(){
+  try{
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY)||"[]");
+    return Array.isArray(data) ? data : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function saveHistory(data){
+  const history = getHistory();
+  history.push(data);
+
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(history));
+  renderHistory();
+}
+
+function updatePlayerInputs(){
+  const count = Number($("playerCount").value);
+
+  $("playerInfo").textContent = count;
+
   for(let i=0;i<4;i++){
-    const lane=document.createElement("div");lane.className="lane";
-    lane.innerHTML=`<div class="lane-name ${colors[i]}"><span id="laneName${i}">PEMAIN ${i+1}</span><small id="laneScore${i}">0 / 10 benar</small></div><div class="track"><div class="robot" id="robot${i}">🤖</div><span class="race-score" id="racePercent${i}">0%</span><span class="finish">🏁</span></div>`;
+    const input = $("playerInput"+i);
+    input.classList.toggle("hidden",i>=count);
+  }
+}
+
+function updateBankCount(){
+  $("bankCount").textContent = questionBank.length;
+}
+
+function renderLanes(){
+  $("lanes").innerHTML = "";
+
+  const colors = ["blue","red","yellow","green"];
+
+  for(let i=0;i<4;i++){
+    const lane = document.createElement("div");
+    lane.className = "lane";
+
+    lane.innerHTML = `
+      <div class="lane-name ${colors[i]}">
+        <span id="laneName${i}">PEMAIN ${i+1}</span>
+        <small id="laneScore${i}">0 / 10 benar</small>
+      </div>
+
+      <div class="track">
+        <div class="robot" id="robot${i}">🤖</div>
+        <span class="race-score" id="racePercent${i}">0%</span>
+        <span class="finish">🏁</span>
+      </div>
+    `;
+
     $("lanes").appendChild(lane);
   }
 }
-function updateBankCount(){$("bankCount").textContent=questionBank.length;}
+
 function normalizeQuestion(row){
-  if(!Array.isArray(row)||row.length<4)return null;
-  const [q,a,w1,w2]=row.map(v=>String(v??"").trim());
-  if(!q||!a||!w1||!w2||new Set([a,w1,w2]).size!==3)return null;
-  return {q,a,w:[w1,w2]};
+  if(!Array.isArray(row) || row.length<5) return null;
+
+  const [q,a,w1,w2,w3] = row.map(v=>String(v??"").trim());
+
+  if(!q || !a || !w1 || !w2 || !w3) return null;
+
+  const options = [a,w1,w2,w3];
+
+  if(new Set(options.map(x=>x.toLocaleLowerCase("id"))).size!==4){
+    return null;
+  }
+
+  return {
+    q,
+    a,
+    w:[w1,w2,w3]
+  };
 }
+
 async function loadQuestions(){
-  if(gameActive){setStatus("Soal tidak dapat diganti ketika sesi berlangsung.","error");return;}
-  const sheetId=$("sheetId").value.trim();
-  if(!sheetId){setStatus("Masukkan ID Google Spreadsheet terlebih dahulu.","error");return;}
-  const btn=$("loadSheetBtn");btn.disabled=true;btn.textContent="Memuat soal...";
+  if(gameActive){
+    setStatus("Soal tidak dapat diganti ketika permainan berlangsung.","error");
+    return;
+  }
+
+  const sheetId = $("sheetId").value.trim();
+
+  if(!sheetId){
+    setStatus("Masukkan ID Google Spreadsheet terlebih dahulu.","error");
+    return;
+  }
+
+  const btn = $("loadSheetBtn");
+  btn.disabled = true;
+  btn.textContent = "Memuat soal...";
+
   setStatus("Sedang mengambil soal dari Google Spreadsheet...");
+
   try{
-    const url="https://docs.google.com/spreadsheets/d/"+encodeURIComponent(sheetId)+"/gviz/tq?tqx=out:json";
-    const response=await fetch(url);
-    if(!response.ok)throw new Error("Spreadsheet tidak dapat dibuka.");
-    const raw=await response.text();const start=raw.indexOf("{");const end=raw.lastIndexOf("}");
-    if(start<0||end<0)throw new Error("Format data spreadsheet tidak dikenali.");
-    const data=JSON.parse(raw.slice(start,end+1));
-    if(!data.table||!Array.isArray(data.table.rows))throw new Error("Data soal tidak ditemukan.");
-    const loaded=data.table.rows.map(row=>(row.c||[]).map(cell=>cell&&cell.v!=null?String(cell.v).trim():"")).map(normalizeQuestion).filter(Boolean);
-    if(loaded.length<4)throw new Error("Minimal harus ada 4 soal valid pada kolom A-D.");
-    questionBank=loaded;updateBankCount();
-    setStatus(`Berhasil memuat ${loaded.length} soal dari Google Spreadsheet.`,"success");
-  }catch(error){setStatus("Gagal memuat spreadsheet: "+error.message+" Pastikan spreadsheet dapat diakses oleh siapa saja. Soal contoh tetap tersedia.","error");}
-  finally{btn.disabled=false;btn.textContent="📚 Muat Soal Spreadsheet";}
+    const url =
+      "https://docs.google.com/spreadsheets/d/" +
+      encodeURIComponent(sheetId) +
+      "/gviz/tq?tqx=out:json";
+
+    const response = await fetch(url);
+
+    if(!response.ok){
+      throw new Error("Spreadsheet tidak dapat dibuka.");
+    }
+
+    const raw = await response.text();
+
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+
+    if(start<0 || end<0){
+      throw new Error("Format data spreadsheet tidak dikenali.");
+    }
+
+    const data = JSON.parse(raw.slice(start,end+1));
+
+    if(!data.table || !Array.isArray(data.table.rows)){
+      throw new Error("Data soal tidak ditemukan.");
+    }
+
+    const loaded = data.table.rows
+      .map(row=>(row.c||[]).map(cell=>{
+        return cell && cell.v!=null ? String(cell.v).trim() : "";
+      }))
+      .map(normalizeQuestion)
+      .filter(Boolean);
+
+    if(loaded.length<QUESTIONS_PER_PLAYER){
+      throw new Error(
+        "Minimal harus ada 10 soal valid dengan 4 pilihan jawaban pada kolom A-E."
+      );
+    }
+
+    questionBank = loaded;
+    updateBankCount();
+
+    setStatus(
+      `Berhasil memuat ${loaded.length} soal dari Google Spreadsheet.`,
+      "success"
+    );
+
+  }catch(error){
+    setStatus(
+      "Gagal memuat spreadsheet: "+error.message+
+      " Pastikan spreadsheet dapat diakses oleh siapa saja. Soal contoh tetap tersedia.",
+      "error"
+    );
+  }finally{
+    btn.disabled = false;
+    btn.textContent = "📚 Muat Soal Spreadsheet";
+  }
 }
+
 function makeDeck(){
-  const deck=[];
-  while(deck.length<QUESTIONS_PER_PLAYER)deck.push(...shuffle(questionBank));
+  const deck = [];
+
+  while(deck.length<QUESTIONS_PER_PLAYER){
+    deck.push(...shuffle(questionBank));
+  }
+
   return deck.slice(0,QUESTIONS_PER_PLAYER);
 }
+
 function startSession(){
-  if(gameActive)return;
-  const names=[0,1,2,3].map(i=>$("name"+i).value.trim()||`Pemain ${i+1}`);
-  if(new Set(names.map(n=>n.toLocaleLowerCase("id"))).size!==4){setStatus("Gunakan nama berbeda untuk setiap pemain.","error");return;}
-  players=names.map((name,index)=>({name,index,score:0,correct:0,answered:0,deck:makeDeck()}));
-  currentPlayerIndex=0;questionIndex=0;gameActive=true;waitingForNextPlayer=false;
-  $("resultPanel").classList.add("hidden");$("gameArea").classList.remove("hidden");$("turnBanner").classList.remove("hidden");
-  $("startBtn").disabled=true;
-  updateScoreBoard();updateAllLanes();startPlayerTurn();
-}
-function startPlayerTurn(){
-  waitingForNextPlayer=false;
-  const p=players[currentPlayerIndex];
-  $("turnBanner").textContent=`🎮 SEKARANG GILIRAN: ${p.name}`;
-  $("playerLabel").textContent=p.name.toLocaleUpperCase("id");
-  $("nextPlayerBtn").classList.add("hidden");
+  if(gameActive) return;
+
+  const count = Number($("playerCount").value);
+
+  const names = [];
+
+  for(let i=0;i<count;i++){
+    const name = $("name"+i).value.trim() || `Pemain ${i+1}`;
+    names.push(name);
+  }
+
+  const normalizedNames = names.map(n=>n.toLocaleLowerCase("id"));
+
+  if(new Set(normalizedNames).size!==names.length){
+    setStatus("Gunakan nama yang berbeda untuk setiap pemain.","error");
+    return;
+  }
+
+  if(questionBank.length<QUESTIONS_PER_PLAYER){
+    setStatus("Minimal tersedia 10 soal untuk memulai permainan.","error");
+    return;
+  }
+
+  players = names.map((name,index)=>({
+    name,
+    index,
+    score:0,
+    correct:0,
+    answered:0,
+    deck:makeDeck()
+  }));
+
+  currentPlayerIndex = 0;
+  gameActive = true;
+  answerLocked = false;
+
+  $("resultPanel").classList.add("hidden");
+  $("gameArea").classList.remove("hidden");
+  $("turnBanner").classList.remove("hidden");
+  $("startBtn").disabled = true;
+  $("playerCount").disabled = true;
+
+  for(let i=0;i<4;i++){
+    $("name"+i).disabled = true;
+  }
+
+  updateAllLanes();
+  updateScoreBoard();
   showQuestion();
+
+  setStatus("Permainan dimulai! Selamat bermain.","success");
 }
+
+function findNextPlayer(){
+  if(!players.length) return -1;
+
+  for(let step=1;step<=players.length;step++){
+    const index = (currentPlayerIndex+step)%players.length;
+
+    if(players[index].answered<QUESTIONS_PER_PLAYER){
+      return index;
+    }
+  }
+
+  return -1;
+}
+
 function showQuestion(){
-  const p=players[currentPlayerIndex];
-  if(questionIndex>=QUESTIONS_PER_PLAYER){finishPlayerTurn();return;}
-  activeQuestion=p.deck[questionIndex];
-  $("questionCount").textContent=`SOAL ${questionIndex+1} DARI ${QUESTIONS_PER_PLAYER}`;
-  $("questionProgress").style.width=`${(questionIndex/QUESTIONS_PER_PLAYER)*100}%`;
-  $("questionText").textContent=activeQuestion.q;
-  $("feedback").textContent="";$("feedback").className="feedback";
-  $("answerList").innerHTML="";
-  const options=shuffle([{text:activeQuestion.a,correct:true},{text:activeQuestion.w[0],correct:false},{text:activeQuestion.w[1],correct:false}]);
+  if(!gameActive) return;
+
+  if(turnTimer){
+    clearTimeout(turnTimer);
+    turnTimer = null;
+  }
+
+  const p = players[currentPlayerIndex];
+
+  if(!p || p.answered>=QUESTIONS_PER_PLAYER){
+    endSession();
+    return;
+  }
+
+  answerLocked = false;
+
+  const question = p.deck[p.answered];
+
+  p.currentQuestion = question;
+
+  $("turnBanner").textContent =
+    `🎮 SEKARANG GILIRAN: ${p.name}`;
+
+  $("playerLabel").textContent =
+    `🎯 GILIRAN: ${p.name.toLocaleUpperCase("id")}`;
+
+  $("questionCount").textContent =
+    `SOAL ${p.answered+1} DARI ${QUESTIONS_PER_PLAYER}`;
+
+  $("questionProgress").style.width =
+    `${(p.answered/QUESTIONS_PER_PLAYER)*100}%`;
+
+  $("questionText").textContent = question.q;
+
+  $("feedback").textContent = "";
+  $("feedback").className = "feedback";
+
+  $("answerList").innerHTML = "";
+
+  const options = shuffle([
+    {text:question.a,correct:true},
+    ...question.w.map(text=>({text,correct:false}))
+  ]);
+
   options.forEach((option,i)=>{
-    const b=document.createElement("button");b.className="answer";b.type="button";
-    b.textContent=String.fromCharCode(65+i)+". "+option.text;
-    b.addEventListener("click",()=>chooseAnswer(option,b));
-    $("answerList").appendChild(b);
+    const button = document.createElement("button");
+
+    button.className = "answer";
+    button.type = "button";
+    button.textContent =
+      String.fromCharCode(65+i)+". "+option.text;
+
+    button.addEventListener("click",()=>{
+      chooseAnswer(option,button);
+    });
+
+    $("answerList").appendChild(button);
   });
+
+  updateScoreBoard();
 }
+
 function chooseAnswer(option,selectedButton){
-  if(!gameActive||waitingForNextPlayer)return;
-  const buttons=[...$("answerList").querySelectorAll("button")];
-  buttons.forEach(b=>b.disabled=true);
-  const p=players[currentPlayerIndex];
+  if(!gameActive || answerLocked) return;
+
+  answerLocked = true;
+
+  const p = players[currentPlayerIndex];
+  const buttons = [...$("answerList").querySelectorAll("button")];
+
+  buttons.forEach(button=>button.disabled=true);
+
   if(option.correct){
-    p.score+=POINTS_PER_CORRECT;p.correct++;
+    p.score += POINTS_PER_CORRECT;
+    p.correct++;
+
     selectedButton.classList.add("correct");
-    $("feedback").textContent="✅ BENAR! +10 poin. Robot maju!";
-    $("feedback").className="feedback good";
+
+    $("feedback").textContent =
+      "✅ BENAR! +10 poin. Robot maju!";
+
+    $("feedback").className = "feedback good";
+
   }else{
     selectedButton.classList.add("wrong");
-    const correctButton=buttons.find(b=>b.textContent.endsWith(". "+activeQuestion.a));
-    if(correctButton)correctButton.classList.add("correct");
-    $("feedback").textContent="❌ Belum tepat. Jawaban benar: "+activeQuestion.a;
-    $("feedback").className="feedback bad";
+
+    const correctButton = buttons.find(button=>{
+      return button.textContent.endsWith(". "+p.currentQuestion.a);
+    });
+
+    if(correctButton){
+      correctButton.classList.add("correct");
+    }
+
+    $("feedback").textContent =
+      "❌ Belum tepat. Jawaban benar: "+p.currentQuestion.a;
+
+    $("feedback").className = "feedback bad";
   }
-  p.answered++;questionIndex++;
-  updateScoreBoard();updateLane(currentPlayerIndex);
-  $("questionProgress").style.width=`${(questionIndex/QUESTIONS_PER_PLAYER)*100}%`;
-  if(questionIndex>=QUESTIONS_PER_PLAYER){
-    setTimeout(finishPlayerTurn,850);
-  }else{
-    setTimeout(showQuestion,850);
-  }
+
+  p.answered++;
+
+  updateLane(currentPlayerIndex);
+  updateScoreBoard();
+
+  $("questionProgress").style.width =
+    `${(p.answered/QUESTIONS_PER_PLAYER)*100}%`;
+
+  const completedName = p.name;
+  const nextIndex = findNextPlayer();
+
+  turnTimer = setTimeout(()=>{
+    turnTimer = null;
+
+    if(nextIndex===-1){
+      endSession();
+      return;
+    }
+
+    currentPlayerIndex = nextIndex;
+
+    const nextName = players[currentPlayerIndex].name;
+
+    setStatus(
+      `${completedName} selesai menjawab. Sekarang giliran ${nextName}.`,
+      "success"
+    );
+
+    showQuestion();
+
+  },1200);
 }
-function finishPlayerTurn(){
-  waitingForNextPlayer=true;
-  const p=players[currentPlayerIndex];
-  $("questionCount").textContent="10 SOAL SELESAI";
-  $("questionText").textContent=`${p.name} telah menyelesaikan gilirannya!`;
-  $("answerList").innerHTML=`<div class="turn-banner">🏁 ${p.correct} jawaban benar • ${p.score} poin</div>`;
-  $("feedback").textContent="";$("questionProgress").style.width="100%";
-  if(currentPlayerIndex<3){
-    $("nextPlayerBtn").textContent=`Lanjut ke ${players[currentPlayerIndex+1].name} →`;
-    $("nextPlayerBtn").classList.remove("hidden");
-    $("turnBanner").textContent=`${p.name} selesai. Siapkan pemain berikutnya.`;
-    setStatus(`${p.name} selesai. Giliran berikutnya adalah ${players[currentPlayerIndex+1].name}.`,"success");
-  }else{
-    endSession();
-  }
-}
-function nextPlayer(){
-  if(!waitingForNextPlayer||currentPlayerIndex>=3)return;
-  currentPlayerIndex++;questionIndex=0;
-  updateScoreBoard();startPlayerTurn();
-  setStatus(`Sekarang giliran ${players[currentPlayerIndex].name}.`,"success");
-}
+
 function updateLane(i){
-  const p=players[i];const pct=(p.correct/QUESTIONS_PER_PLAYER)*100;
-  $(`laneName${i}`).textContent=p.name;
-  $(`laneScore${i}`).textContent=`${p.correct} / ${QUESTIONS_PER_PLAYER} benar`;
-  $(`robot${i}`).style.left=`${Math.min(88,pct*.88)}%`;
-  $(`racePercent${i}`).textContent=Math.round(pct)+"%";
+  const p = players[i];
+
+  if(!p) return;
+
+  const pct = (p.correct/QUESTIONS_PER_PLAYER)*100;
+
+  $(`laneName${i}`).textContent = p.name;
+
+  $(`laneScore${i}`).textContent =
+    `${p.correct} / ${QUESTIONS_PER_PLAYER} benar`;
+
+  $(`robot${i}`).style.left =
+    `${Math.min(88,pct*.88)}%`;
+
+  $(`racePercent${i}`).textContent =
+    Math.round(pct)+"%";
 }
-function updateAllLanes(){players.forEach((_,i)=>updateLane(i));}
+
+function updateAllLanes(){
+  for(let i=0;i<4;i++){
+    if(i<players.length){
+      updateLane(i);
+      $(`lanes`).children[i].classList.remove("hidden");
+    }else{
+      $(`lanes`).children[i].classList.add("hidden");
+    }
+  }
+}
+
 function updateScoreBoard(){
-  $("scoreBoard").innerHTML=players.map((p,i)=>`<div class="side-row"><span>${escapeHTML(p.name)}</span><strong>${p.score} poin</strong></div>`).join("");
+  $("scoreBoard").innerHTML = players.map((p,i)=>{
+    const active = i===currentPlayerIndex && gameActive;
+
+    return `
+      <div class="side-row ${active?"active":""}">
+        <span>
+          ${active?"▶ ":""}${escapeHTML(p.name)}
+          <br>
+          <small class="muted">
+            ${p.answered}/${QUESTIONS_PER_PLAYER} soal
+          </small>
+        </span>
+
+        <strong>${p.score} poin</strong>
+      </div>
+    `;
+  }).join("");
 }
+
 function endSession(){
-  gameActive=false;waitingForNextPlayer=false;
-  const ranking=[...players].sort((a,b)=>b.score-a.score||b.correct-a.correct);
-  const best=ranking[0].score;const winners=ranking.filter(p=>p.score===best);
-  $("winnerText").textContent=winners.length===1?`🎉 ${winners[0].name} menjadi juara dengan ${best} poin!`:`🤝 Hasil seri: ${winners.map(p=>p.name).join(", ")} memperoleh ${best} poin.`;
-  $("resultList").innerHTML="";
+  gameActive = false;
+  answerLocked = true;
+
+  if(turnTimer){
+    clearTimeout(turnTimer);
+    turnTimer = null;
+  }
+
+  const ranking = [...players].sort((a,b)=>{
+    return b.score-a.score || b.correct-a.correct;
+  });
+
+  const best = ranking[0].score;
+  const winners = ranking.filter(p=>p.score===best);
+
+  $("winnerText").textContent =
+    winners.length===1
+      ? `🎉 ${winners[0].name} menjadi juara dengan ${best} poin!`
+      : `🤝 Hasil seri: ${winners.map(p=>p.name).join(", ")} memperoleh ${best} poin.`;
+
+  $("resultList").innerHTML = "";
+
   ranking.forEach((p,i)=>{
-    const li=document.createElement("li");
-    const medal=["🥇","🥈","🥉","4️⃣"][i];
-    li.innerHTML=`<span>${medal} ${escapeHTML(p.name)}</span><span>${p.score} poin (${p.correct} benar)</span>`;
+    const li = document.createElement("li");
+
+    const medal = ["🥇","🥈","🥉","4️⃣"][i];
+
+    li.innerHTML = `
+      <span>${medal} ${escapeHTML(p.name)}</span>
+      <span>${p.score} poin (${p.correct} benar)</span>
+    `;
+
     $("resultList").appendChild(li);
   });
-  const historyEntry={session:getHistory().length+1,date:new Date().toLocaleString("id-ID"),players:ranking.map((p,i)=>({name:p.name,score:p.score,correct:p.correct,rank:i+1}))};
+
+  const historyEntry = {
+    session:getHistory().length+1,
+    date:new Date().toLocaleString("id-ID"),
+    players:ranking.map((p,i)=>({
+      name:p.name,
+      score:p.score,
+      correct:p.correct,
+      rank:i+1
+    }))
+  };
+
   saveHistory(historyEntry);
+
   $("resultPanel").classList.remove("hidden");
-  $("turnBanner").textContent="Sesi selesai! Semua pemain telah menjawab 10 soal.";
-  $("nextPlayerBtn").classList.add("hidden");
-  $("startBtn").disabled=false;
-  setStatus("Sesi selesai. Hasil sudah disimpan di riwayat browser ini.","success");
+
+  $("turnBanner").textContent =
+    "🏁 Permainan selesai! Semua pemain telah menjawab 10 soal.";
+
+  $("startBtn").disabled = false;
+  $("playerCount").disabled = false;
+
+  for(let i=0;i<4;i++){
+    $("name"+i).disabled = false;
+  }
+
+  updateScoreBoard();
+
+  setStatus(
+    "Permainan selesai! Hasil berhasil disimpan.",
+    "success"
+  );
 }
+
 function renderHistory(){
-  const history=getHistory();
-  if(!history.length){$("historyContent").textContent="Belum ada hasil sesi yang tersimpan.";return;}
-  $("historyContent").innerHTML=history.slice().reverse().map(s=>`<div style="margin:12px 0;padding:12px;background:#f8fafc;border-radius:10px"><strong>Sesi ${s.session}</strong> <span class="muted">• ${escapeHTML(s.date)}</span><table><thead><tr><th>Peringkat</th><th>Nama</th><th>Skor</th><th>Benar</th></tr></thead><tbody>${s.players.map(p=>`<tr><td>${["🥇","🥈","🥉","4️⃣"][p.rank-1]}</td><td>${escapeHTML(p.name)}</td><td>${p.score}</td><td>${p.correct}</td></tr>`).join("")}</tbody></table></div>`).join("");
+  const history = getHistory();
+
+  if(!history.length){
+    $("historyContent").textContent =
+      "Belum ada hasil permainan yang tersimpan.";
+    return;
+  }
+
+  $("historyContent").innerHTML = history.slice().reverse().map(s=>`
+    <div style="margin:12px 0;padding:12px;background:#f8fafc;border-radius:10px">
+      <strong>Sesi ${s.session}</strong>
+      <span class="muted">• ${escapeHTML(s.date)}</span>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Peringkat</th>
+            <th>Nama</th>
+            <th>Skor</th>
+            <th>Benar</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${s.players.map(p=>`
+            <tr>
+              <td>${["🥇","🥈","🥉","4️⃣"][p.rank-1]}</td>
+              <td>${escapeHTML(p.name)}</td>
+              <td>${p.score}</td>
+              <td>${p.correct}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    </div>
+  `).join("");
 }
+
 function exportCSV(){
-  const history=getHistory();if(!history.length){setStatus("Belum ada riwayat untuk diekspor.","error");return;}
-  const rows=[["Sesi","Tanggal","Peringkat","Nama pemain","Skor","Jawaban benar"]];
-  history.forEach(s=>s.players.forEach(p=>rows.push([s.session,s.date,p.rank,p.name,p.score,p.correct])));
-  const csv=rows.map(row=>row.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\r\n");
-  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
-  const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download="riwayat-kuis-balap-robot.csv";a.click();URL.revokeObjectURL(url);
+  const history = getHistory();
+
+  if(!history.length){
+    setStatus("Belum ada riwayat untuk diekspor.","error");
+    return;
+  }
+
+  const rows = [[
+    "Sesi",
+    "Tanggal",
+    "Peringkat",
+    "Nama pemain",
+    "Skor",
+    "Jawaban benar"
+  ]];
+
+  history.forEach(s=>{
+    s.players.forEach(p=>{
+      rows.push([
+        s.session,
+        s.date,
+        p.rank,
+        p.name,
+        p.score,
+        p.correct
+      ]);
+    });
+  });
+
+  const csv = rows.map(row=>{
+    return row.map(value=>{
+      return `"${String(value).replace(/"/g,'""')}"`;
+    }).join(",");
+  }).join("\r\n");
+
+  const blob = new Blob(
+    ["\uFEFF"+csv],
+    {type:"text/csv;charset=utf-8;"}
+  );
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+
+  a.href = url;
+  a.download = "riwayat-kuis-balap-robot.csv";
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
+
 function clearHistory(){
-  if(!confirm("Hapus semua riwayat sesi yang tersimpan di browser ini?"))return;
-  localStorage.removeItem(STORAGE_KEY);renderHistory();setStatus("Riwayat lokal berhasil dihapus.","success");
+  if(!confirm("Hapus semua riwayat permainan yang tersimpan di browser ini?")){
+    return;
+  }
+
+  localStorage.removeItem(STORAGE_KEY);
+  renderHistory();
+
+  setStatus("Riwayat lokal berhasil dihapus.","success");
 }
+
 async function toggleFullscreen(){
-  try{if(!document.fullscreenElement)await document.documentElement.requestFullscreen();else await document.exitFullscreen();}
-  catch(e){setStatus("Mode layar penuh tidak didukung atau diblokir browser.","error");}
+  try{
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }else{
+      await document.exitFullscreen();
+    }
+  }catch(e){
+    setStatus(
+      "Mode layar penuh tidak didukung atau diblokir browser.",
+      "error"
+    );
+  }
 }
+
 function prepareNextSession(){
-  if(gameActive)return;
-  $("resultPanel").classList.add("hidden");$("gameArea").classList.add("hidden");$("turnBanner").classList.add("hidden");
-  $("startBtn").disabled=false;
-  $("answerList").innerHTML="";$("questionText").textContent="Pertanyaan akan muncul di sini.";
-  $("questionProgress").style.width="0%";$("feedback").textContent="";
+  if(gameActive) return;
+
+  if(turnTimer){
+    clearTimeout(turnTimer);
+    turnTimer = null;
+  }
+
+  $("resultPanel").classList.add("hidden");
+  $("gameArea").classList.add("hidden");
+  $("turnBanner").classList.add("hidden");
+
+  $("startBtn").disabled = false;
+  $("playerCount").disabled = false;
+
+  for(let i=0;i<4;i++){
+    $("name"+i).disabled = false;
+  }
+
+  $("answerList").innerHTML = "";
+  $("questionText").textContent =
+    "Pertanyaan akan muncul di sini.";
+
+  $("questionProgress").style.width = "0%";
+  $("feedback").textContent = "";
+
+  updatePlayerInputs();
+
   $("name0").focus();
-  setStatus("Masukkan atau ubah nama empat pemain untuk sesi berikutnya.","success");
+
+  setStatus(
+    "Silakan ubah nama atau jumlah pemain untuk permainan berikutnya.",
+    "success"
+  );
 }
+
+$("playerCount").addEventListener("change",updatePlayerInputs);
 $("loadSheetBtn").addEventListener("click",loadQuestions);
 $("startBtn").addEventListener("click",startSession);
-$("nextPlayerBtn").addEventListener("click",nextPlayer);
 $("newSessionBtn").addEventListener("click",prepareNextSession);
 $("fullscreenBtn").addEventListener("click",toggleFullscreen);
 $("exportBtn").addEventListener("click",exportCSV);
 $("clearHistoryBtn").addEventListener("click",clearHistory);
-renderLanes();updateBankCount();renderHistory();
+
+renderLanes();
+updatePlayerInputs();
+updateBankCount();
+renderHistory();
+
 </script>
 </body>
 </html>
