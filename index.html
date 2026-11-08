@@ -400,7 +400,7 @@ footer{
 
 <header>
   <h1>🏁 BALAP ROBOT CERDAS 🤖</h1>
-  <p>Kuis bergiliran untuk 2–4 pemain. Jawab soal dan jadilah juara!</p>
+  <p>Kuis bergiliran untuk 2–4 pemain. Soal dan kunci jawaban diambil dari Google Spreadsheet.</p>
 </header>
 
 <div class="toolbar">
@@ -705,23 +705,114 @@ function renderLanes(){
   }
 }
 
-function normalizeQuestion(row){
-  if(!Array.isArray(row) || row.length<5) return null;
+function cellText(cell){
+  if(!cell) return "";
+  if(cell.f != null) return String(cell.f).trim();
+  if(cell.v != null) return String(cell.v).trim();
+  return "";
+}
 
-  const [q,a,w1,w2,w3] = row.map(v=>String(v??"").trim());
-
-  if(!q || !a || !w1 || !w2 || !w3) return null;
-
-  const options = [a,w1,w2,w3];
-
-  if(new Set(options.map(x=>x.toLocaleLowerCase("id"))).size!==4){
-    return null;
+function parseGvizResponse(raw){
+  const start = raw.indexOf("{");
+  const end = raw.lastIndexOf("}");
+  if(start < 0 || end < 0){
+    throw new Error("Format data spreadsheet tidak dikenali.");
   }
+  const data = JSON.parse(raw.slice(start, end + 1));
+  if(!data.table || !Array.isArray(data.table.rows)){
+    throw new Error("Data pada tab spreadsheet tidak ditemukan.");
+  }
+  return data.table.rows.map(row => (row.c || []).map(cellText));
+}
+
+async function fetchSheetRows(sheetId, sheetName){
+  const url = "https://docs.google.com/spreadsheets/d/" +
+    encodeURIComponent(sheetId) +
+    "/gviz/tq?sheet=" + encodeURIComponent(sheetName) +
+    "&tqx=out:json";
+
+  const response = await fetch(url);
+  if(!response.ok){
+    throw new Error("Tab '" + sheetName + "' tidak dapat dibaca.");
+  }
+  return parseGvizResponse(await response.text());
+}
+
+function extractAnswerKey(value){
+  const text = String(value ?? "").trim();
+  if(!text) return "";
+
+  // Mendukung format: B, b, B., B), B - ..., atau jawaban berupa teks lengkap.
+  const letterMatch = text.match(/^([ABCD])(?:\s*[.)\-:]\s*.*)?$/i);
+  if(letterMatch) return letterMatch[1].toUpperCase();
+  return text;
+}
+
+function readAnswerKeys(rows){
+  const keysByNumber = {};
+  const sequentialKeys = [];
+
+  rows.forEach(row => {
+    const cells = row.map(v => String(v ?? "").trim()).filter(v => v !== "");
+    if(!cells.length) return;
+
+    const joined = cells.join(" ").toLocaleLowerCase("id");
+    if(joined.includes("kunci jawaban") || joined === "kunci" || joined.includes("nomor soal")) return;
+
+    // Format tabel: kolom A = nomor soal, kolom B = kunci (A/B/C/D atau teks jawaban).
+    const numberCell = cells.find(v => /^\d+$/.test(v));
+    const keyCell = cells.find(v => /^[ABCD](?:\s*[.)\-:]\s*.*)?$/i.test(v));
+    if(numberCell){
+      const valueCell = keyCell || [...cells].reverse().find(v => v !== numberCell);
+      if(valueCell){
+        keysByNumber[Number(numberCell)] = extractAnswerKey(valueCell);
+        return;
+      }
+    }
+
+    // Format sederhana: satu kunci per baris pada kolom A.
+    // Juga mendukung kunci berada di kolom lain selama hanya ada satu nilai kunci.
+    const candidate = cells.find(v => /^[ABCD](?:\s*[.)\-:]\s*.*)?$/i.test(v));
+    if(candidate){
+      sequentialKeys.push(extractAnswerKey(candidate));
+      return;
+    }
+
+    // Jika kunci ditulis sebagai teks jawaban, gunakan sel terakhir pada baris.
+    // Baris judul sudah disaring di atas.
+    if(cells.length === 1){
+      sequentialKeys.push(extractAnswerKey(cells[0]));
+    }
+  });
+
+  return { keysByNumber, sequentialKeys };
+}
+
+function normalizeQuestion(row, answerKey){
+  if(!Array.isArray(row) || row.length < 5) return null;
+
+  const [q, choiceA, choiceB, choiceC, choiceD] = row.map(v => String(v ?? "").trim());
+  if(!q || !choiceA || !choiceB || !choiceC || !choiceD || !answerKey) return null;
+
+  const choices = [choiceA, choiceB, choiceC, choiceD];
+  if(new Set(choices.map(x => x.toLocaleLowerCase("id"))).size !== 4) return null;
+
+  let correctIndex = -1;
+  const key = String(answerKey).trim();
+  if(/^[ABCD]$/i.test(key)){
+    correctIndex = ["A", "B", "C", "D"].indexOf(key.toUpperCase());
+  }else{
+    correctIndex = choices.findIndex(choice =>
+      choice.toLocaleLowerCase("id") === key.toLocaleLowerCase("id")
+    );
+  }
+
+  if(correctIndex < 0) return null;
 
   return {
     q,
-    a,
-    w:[w1,w2,w3]
+    a: choices[correctIndex],
+    w: choices.filter((_, index) => index !== correctIndex)
   };
 }
 
@@ -732,7 +823,6 @@ async function loadQuestions(){
   }
 
   const sheetId = $("sheetId").value.trim();
-
   if(!sheetId){
     setStatus("Masukkan ID Google Spreadsheet terlebih dahulu.","error");
     return;
@@ -741,61 +831,67 @@ async function loadQuestions(){
   const btn = $("loadSheetBtn");
   btn.disabled = true;
   btn.textContent = "Memuat soal...";
-
-  setStatus("Sedang mengambil soal dari Google Spreadsheet...");
+  setStatus("Sedang mengambil soal dan kunci jawaban dari Google Spreadsheet...");
 
   try{
-    const url =
-      "https://docs.google.com/spreadsheets/d/" +
-      encodeURIComponent(sheetId) +
-      "/gviz/tq?tqx=out:json";
+    // Nama tab mengikuti spreadsheet pada gambar yang dikirim.
+    const [questionRows, keyRows] = await Promise.all([
+      fetchSheetRows(sheetId, "Soal Balap Robot"),
+      fetchSheetRows(sheetId, "Kunci Jawaban")
+    ]);
 
-    const response = await fetch(url);
+    const parsedKeys = readAnswerKeys(keyRows);
+    const loaded = [];
+    let missingKeys = 0;
+    let questionNumber = 0;
 
-    if(!response.ok){
-      throw new Error("Spreadsheet tidak dapat dibuka.");
-    }
+    questionRows.forEach(row => {
+      // Lewati baris kosong dan baris judul/header.
+      if(!row || !row.some(value => String(value ?? "").trim())) return;
+      const firstCell = String(row[0] ?? "").trim().toLocaleLowerCase("id");
+      const rowText = row.join(" ").toLocaleLowerCase("id");
+      if(firstCell === "soal" || rowText.includes("pilihan a") || rowText.includes("pilihan b")) return;
+      if(row.length < 5 || !row.slice(0,5).every(v => String(v ?? "").trim())) return;
 
-    const raw = await response.text();
+      questionNumber++;
+      let key = parsedKeys.keysByNumber[questionNumber];
+      if(!key) key = parsedKeys.sequentialKeys[questionNumber - 1];
 
-    const start = raw.indexOf("{");
-    const end = raw.lastIndexOf("}");
+      // Alternatif: jika kunci diletakkan langsung di kolom F pada tab soal.
+      if(!key && row[5]) key = extractAnswerKey(row[5]);
 
-    if(start<0 || end<0){
-      throw new Error("Format data spreadsheet tidak dikenali.");
-    }
+      const normalized = normalizeQuestion(row, key);
+      if(normalized){
+        loaded.push(normalized);
+      }else{
+        missingKeys++;
+      }
+    });
 
-    const data = JSON.parse(raw.slice(start,end+1));
-
-    if(!data.table || !Array.isArray(data.table.rows)){
-      throw new Error("Data soal tidak ditemukan.");
-    }
-
-    const loaded = data.table.rows
-      .map(row=>(row.c||[]).map(cell=>{
-        return cell && cell.v!=null ? String(cell.v).trim() : "";
-      }))
-      .map(normalizeQuestion)
-      .filter(Boolean);
-
-    if(loaded.length<QUESTIONS_PER_PLAYER){
+    if(loaded.length < QUESTIONS_PER_PLAYER){
+      if(missingKeys){
+        throw new Error(
+          "Ada soal yang kunci jawabannya kosong atau tidak cocok. Periksa tab 'Kunci Jawaban'. Kunci dapat berupa A/B/C/D atau teks jawaban yang sama persis dengan pilihan."
+        );
+      }
       throw new Error(
-        "Minimal harus ada 10 soal valid dengan 4 pilihan jawaban pada kolom A-E."
+        "Minimal harus ada 10 soal valid. Pastikan tab 'Soal Balap Robot' berisi kolom A-E dan tab 'Kunci Jawaban' berisi kunci untuk setiap soal."
       );
     }
 
     questionBank = loaded;
     updateBankCount();
+    $("questionInfo").textContent = QUESTIONS_PER_PLAYER;
 
     setStatus(
-      `Berhasil memuat ${loaded.length} soal dari Google Spreadsheet.`,
+      `Berhasil memuat ${loaded.length} soal beserta kunci jawaban dari spreadsheet.`,
       "success"
     );
 
   }catch(error){
     setStatus(
-      "Gagal memuat spreadsheet: "+error.message+
-      " Pastikan spreadsheet dapat diakses oleh siapa saja. Soal contoh tetap tersedia.",
+      "Gagal memuat spreadsheet: " + error.message +
+      " Pastikan spreadsheet dibagikan dengan akses 'Siapa saja yang memiliki link' sebagai Viewer. Soal contoh tetap tersedia.",
       "error"
     );
   }finally{
