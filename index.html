@@ -400,19 +400,12 @@ footer{
 
 <header>
   <h1>🏁 BALAP ROBOT CERDAS 🤖</h1>
-  <p>Kuis bergiliran untuk 2–4 pemain. Soal dan kunci jawaban diambil dari Google Spreadsheet.</p>
+  <p>Kuis bergiliran untuk 2–4 pemain. Soal dan kunci jawaban terhubung otomatis ke Google Spreadsheet.</p>
 </header>
 
 <div class="toolbar">
-  <input
-    id="sheetId"
-    type="text"
-    value="1hUuc9ya1jKXgyiW2tBPEXsHtot4cxsxpqgopYh-8sPU"
-    placeholder="Masukkan ID Google Spreadsheet"
-    aria-label="ID Google Spreadsheet"
-  >
   <button class="btn primary" id="loadSheetBtn">
-    📚 Muat Soal Spreadsheet
+    🔄 Muat Ulang Soal Spreadsheet
   </button>
   <button class="btn dark" id="fullscreenBtn">
     ⛶ Layar Penuh
@@ -420,7 +413,7 @@ footer{
 </div>
 
 <div id="status" class="status">
-  Game siap. Atur jumlah pemain dan nama pemain, lalu mulai permainan.
+  Menghubungkan ke Google Spreadsheet...
 </div>
 
 <main class="wrap">
@@ -588,6 +581,7 @@ footer{
 const QUESTIONS_PER_PLAYER = 10;
 const POINTS_PER_CORRECT = 10;
 const STORAGE_KEY = "balapRobotCerdas_sessions_v2";
+const SPREADSHEET_ID = "1KUCZx5yyRpH0HpmJOh21KK5I2FAVGejjhNGX9wpZHJs";
 
 const FALLBACK_QUESTIONS = [
   {q:"Apa ibu kota Indonesia?",a:"Jakarta",w:["Bandung","Surabaya","Medan"]},
@@ -822,11 +816,7 @@ async function loadQuestions(){
     return;
   }
 
-  const sheetId = $("sheetId").value.trim();
-  if(!sheetId){
-    setStatus("Masukkan ID Google Spreadsheet terlebih dahulu.","error");
-    return;
-  }
+  const sheetId = SPREADSHEET_ID;
 
   const btn = $("loadSheetBtn");
   btn.disabled = true;
@@ -1395,6 +1385,9 @@ renderLanes();
 updatePlayerInputs();
 updateBankCount();
 renderHistory();
+
+// Otomatis mengambil soal dan kunci jawaban saat halaman dibuka.
+loadQuestions();
 
 </script>
 </body>
