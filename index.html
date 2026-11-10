@@ -469,17 +469,17 @@ footer{
   </div>
 
   <div class="info-card">
-    <strong id="questionInfo">10</strong>
+    <strong id="questionInfo">5</strong>
     <span>Soal per pemain</span>
   </div>
 
   <div class="info-card">
-    <strong>10</strong>
+    <strong>20</strong>
     <span>Poin jawaban benar</span>
   </div>
 
   <div class="info-card">
-    <strong id="bankCount">20</strong>
+    <strong id="bankCount">5</strong>
     <span>Soal tersedia</span>
   </div>
 </section>
@@ -502,7 +502,7 @@ footer{
 
     <div class="question-top">
       <span id="playerLabel">PEMAIN 1</span>
-      <span id="questionCount">SOAL 1 DARI 10</span>
+      <span id="questionCount">SOAL 1 DARI 5</span>
     </div>
 
     <div class="progress">
@@ -524,7 +524,7 @@ footer{
     <div id="scoreBoard"></div>
 
     <p class="muted" style="font-size:12px;line-height:1.5">
-      Setiap pemain menjawab satu soal secara bergiliran.
+      Setiap pemain menjawab 5 soal secara bergiliran. Setiap jawaban benar bernilai 20 poin (maksimal 100 poin).
       Setelah semua pemain mendapat giliran, permainan kembali ke pemain pertama.
     </p>
   </aside>
@@ -578,8 +578,8 @@ footer{
 <script>
 "use strict";
 
-const QUESTIONS_PER_PLAYER = 10;
-const POINTS_PER_CORRECT = 10;
+let QUESTIONS_PER_PLAYER = 5; // Maksimal 5 soal untuk setiap pemain.
+const POINTS_PER_CORRECT = 20;
 const STORAGE_KEY = "balapRobotCerdas_sessions_v2";
 const SPREADSHEET_ID = "1KUCZx5yyRpH0HpmJOh21KK5I2FAVGejjhNGX9wpZHJs";
 
@@ -685,7 +685,7 @@ function renderLanes(){
     lane.innerHTML = `
       <div class="lane-name ${colors[i]}">
         <span id="laneName${i}">PEMAIN ${i+1}</span>
-        <small id="laneScore${i}">0 / 10 benar</small>
+        <small id="laneScore${i}">0 / 5 benar</small>
       </div>
 
       <div class="track">
@@ -858,23 +858,27 @@ async function loadQuestions(){
       }
     });
 
-    if(loaded.length < QUESTIONS_PER_PLAYER){
+    if(loaded.length === 0){
       if(missingKeys){
         throw new Error(
-          "Ada soal yang kunci jawabannya kosong atau tidak cocok. Periksa tab 'Kunci Jawaban'. Kunci dapat berupa A/B/C/D atau teks jawaban yang sama persis dengan pilihan."
+          "Soal ditemukan, tetapi kunci jawabannya kosong atau tidak cocok. Periksa tab 'Kunci Jawaban'."
         );
       }
       throw new Error(
-        "Minimal harus ada 10 soal valid. Pastikan tab 'Soal Balap Robot' berisi kolom A-E dan tab 'Kunci Jawaban' berisi kunci untuk setiap soal."
+        "Belum ada soal valid. Pastikan tab 'Soal Balap Robot' berisi kolom A-E dan tab 'Kunci Jawaban' berisi nomor soal serta jawaban benar."
       );
     }
+
+    // Maksimal 5 soal per pemain, mengikuti jumlah soal pada spreadsheet.
+    // Setiap jawaban benar bernilai 20 poin (maksimal 100 poin).
+    QUESTIONS_PER_PLAYER = Math.min(5, loaded.length);
 
     questionBank = loaded;
     updateBankCount();
     $("questionInfo").textContent = QUESTIONS_PER_PLAYER;
 
     setStatus(
-      `Berhasil memuat ${loaded.length} soal beserta kunci jawaban dari spreadsheet.`,
+      `Berhasil memuat ${loaded.length} soal dan kunci jawaban. Setiap pemain mendapat ${QUESTIONS_PER_PLAYER} soal.`,
       "success"
     );
 
@@ -886,7 +890,7 @@ async function loadQuestions(){
     );
   }finally{
     btn.disabled = false;
-    btn.textContent = "📚 Muat Soal Spreadsheet";
+    btn.textContent = "🔄 Muat Ulang Soal Spreadsheet";
   }
 }
 
@@ -920,7 +924,7 @@ function startSession(){
   }
 
   if(questionBank.length<QUESTIONS_PER_PLAYER){
-    setStatus("Minimal tersedia 10 soal untuk memulai permainan.","error");
+    setStatus(`Minimal tersedia ${QUESTIONS_PER_PLAYER} soal untuk memulai permainan.`,"error");
     return;
   }
 
@@ -1048,7 +1052,7 @@ function chooseAnswer(option,selectedButton){
     selectedButton.classList.add("correct");
 
     $("feedback").textContent =
-      "✅ BENAR! +10 poin. Robot maju!";
+      `✅ BENAR! +${POINTS_PER_CORRECT} poin. Robot maju!`;
 
     $("feedback").className = "feedback good";
 
@@ -1204,7 +1208,7 @@ function endSession(){
   $("resultPanel").classList.remove("hidden");
 
   $("turnBanner").textContent =
-    "🏁 Permainan selesai! Semua pemain telah menjawab 10 soal.";
+    `🏁 Permainan selesai! Semua pemain telah menjawab ${QUESTIONS_PER_PLAYER} soal.`;
 
   $("startBtn").disabled = false;
   $("playerCount").disabled = false;
